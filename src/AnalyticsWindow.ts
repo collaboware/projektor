@@ -1,5 +1,5 @@
 interface AnalyticsLoadedInWindow extends Window {
-  fathom: { trackGoal(key: string, value: number): void };
+  fathom: { trackGoal(key: string, value: number): void }
 }
 
-export const analyticsWindow = window as unknown as AnalyticsLoadedInWindow;
+export const analyticsWindow = window as unknown as AnalyticsLoadedInWindow
