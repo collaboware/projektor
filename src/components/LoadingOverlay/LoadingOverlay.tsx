@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react'
 
-import styles from "./LoadingOverlay.module.scss";
+import styles from './LoadingOverlay.module.scss'
 
 interface LoadingOverlayProps {
-  description: string;
-  active?: boolean;
+  description: string
+  active?: boolean
 }
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
@@ -16,7 +16,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
     <div className={styles.loadingOverlay}>
       <div className={styles.loadingText}>{description}</div>
     </div>
-  ) : null;
-};
+  ) : null
+}
 
-export default LoadingOverlay;
+export default LoadingOverlay

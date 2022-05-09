@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import { Fetcher, Store } from 'rdflib'
 import { useRecoilState } from 'recoil'
 

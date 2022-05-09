@@ -1,0 +1,19 @@
+PREFIX prk: <https://dips.projektor.technology/projektor/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+prk:PostShape EXTRA a {
+  a [ prk:Post ]
+    // rdfs:comment  "Defines the node as a Post (from projektor)" ;
+  prk:caption xsd:string ?
+    // rdfs:comment  "The caption of a post" ;
+  prk:link IRI
+    // rdfs:comment  "The link to a post resources" ;
+}
+
+prk:PostShapeIndex EXTRA a {
+  a [ prk:Post ]
+    // rdfs:comment  "Defines the node as a Post (from projektor)" ;
+  prk:link IRI
+    // rdfs:comment  "The link to a post" ;
+}
