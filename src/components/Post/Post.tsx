@@ -1,5 +1,4 @@
 import React from 'react'
-<<<<<<< HEAD
 import classNames from 'classnames'
 
 import { PostShape } from '../../generated/shex'
@@ -37,30 +36,6 @@ const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
         }}
       />
     </div>
-=======
-
-import { PostShape } from '../../shex/generated'
-
-interface PostProps {
-  post: PostShape
-  onSelect?: () => void
-}
-
-const Post: React.FC<PostProps> = ({ post, onSelect }) => {
-  return (
-    <div
-      key={post.id}
-      onClick={() => {
-        console.debug(post.id)
-        if (onSelect) onSelect()
-      }}
-      className="post"
-      style={{
-        background: `url(${post.link})`,
-        backgroundSize: 'cover',
-      }}
-    />
->>>>>>> 286dad0 (feat: Add basic uploading and viewing)
   )
 }
 
