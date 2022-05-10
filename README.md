@@ -6,6 +6,6 @@ Decentralized Photo Sharing with [Solid Pods](https://solidproject.org/)
 
 `yarn && yarn generate:shex`
 
-## Run
+## Run Dev Server
 
 `yarn start`
