@@ -1,0 +1,63 @@
+@import "../../styles/constants.scss";
+
+.postGrid {
+  width: 100%;
+  display: grid;
+  grid-template-rows: max-content;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.post {
+  height: calc((960px - 32px) / 3);
+  background-size: contain;
+  max-width: 100%;
+}
+
+.selectedPostWrapper {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: 960px;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.selectedPost {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 100vh;
+  width: 100%;
+  max-width: 960px;
+  margin: auto;
+  z-index: 1;
+}
+
+.closeSelectedPostButton {
+  position: absolute;
+  z-index: 2;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: $screen-s) {
+  .selectedPostWrapper {
+    width: 100vw;
+  }
+
+  .selectedPost {
+    width: 100vw;
+  }
+
+  .postGrid {
+    gap: 8px;
+  }
+
+  .post {
+    height: calc((100vw - 16px) / 3);
+  }
+}
