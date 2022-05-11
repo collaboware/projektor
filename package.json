@@ -16,6 +16,7 @@
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
     "sass": "^1.51.0",
+    "shex-methods": "^0.1.33",
     "typescript": "^4.6.4",
     "web-vitals": "^2.1.4"
   },
@@ -23,7 +24,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate:shex": "shex-codegen generate"
   },
   "browserslist": {
     "production": [
@@ -46,6 +48,7 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-react-hooks": "^4.3.0"
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "shex-codegen": "^0.3.27"
   }
 }
