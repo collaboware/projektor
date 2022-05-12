@@ -19,6 +19,7 @@ import UploadButton from './components/UploadButton/UploadButton'
 import LoadingOverlay from './components/LoadingOverlay/LoadingOverlay'
 import PostGrid from './components/PostGrid/PostGrid'
 import { analyticsWindow } from './AnalyticsWindow'
+import Header from './components/Header/Header'
 
 function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false)
@@ -86,10 +87,7 @@ function App() {
     >
       <div className="app">
         {currentSession ? (
-          <div className="header">
-            <h2>Projektor</h2>
-            <div>{currentUser?.name}</div>
-          </div>
+          <Header user={currentUser} />
         ) : (
           <div className="main">
             {isLoggingIn ? (

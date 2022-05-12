@@ -18,8 +18,7 @@ interface UploadButtonProps {
 }
 
 const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
-  const { session: currentSession, user } = useContext(CurrentUserAuthContext)
-  console.debug(currentSession, user)
+  const { session: currentSession } = useContext(CurrentUserAuthContext)
   const [isUploading, setIsUploading] = useState(false)
   return (
     <>

@@ -1,0 +1,26 @@
+.header {
+  height: 64px;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  display: flex;
+  padding: 0 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search {
+  width: 200px;
+  margin-right: 4px;
+}
+
+.brand {
+  text-align: left;
+  margin: initial;
+  width: 200px;
+}
+
+.user {
+  text-align: right;
+  width: 200px;
+}
