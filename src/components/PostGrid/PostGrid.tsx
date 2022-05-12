@@ -35,10 +35,7 @@ const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
           />
         </div>
       )}
-      <div
-        className={styles.postGrid}
-        style={{ overflowY: selectedPost ? 'hidden' : 'scroll' }}
-      >
+      <div className={styles.postGrid}>
         {posts.map((post) => (
           <Post post={post} onSelect={() => setSelectedPost(post)} />
         ))}
