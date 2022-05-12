@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { useRef } from 'react'
 
+import { analyticsWindow } from '../../AnalyticsWindow'
 import { PostShape } from '../../generated/shex'
+import useClickOutside from '../../utils/hooks/useClickOutside'
 import Post from '../Post/Post'
 
 import styles from './PostGrid.module.scss'
@@ -11,6 +14,17 @@ interface PostGridProps {
 
 const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
   const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
+  const selectedImageRef = useRef<HTMLImageElement>(null)
+
+  const onClose = () => {
+    setSelectedPost(null)
+  }
+
+  useClickOutside(selectedImageRef, () => {
+    analyticsWindow.fathom?.trackGoal('7RBSJNKX', 0)
+    onClose()
+  })
+
   return (
     <>
       {selectedPost && (
@@ -18,20 +32,17 @@ const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
           <button
             className={styles.closeSelectedPostButton}
             onClick={(e) => {
+              analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
               e.preventDefault()
-              setSelectedPost(null)
+              onClose()
             }}
           >
             Close
           </button>
-          <div
+          <img
+            ref={selectedImageRef}
             className={styles.selectedPost}
-            style={{
-              background: `url(${selectedPost.link})`,
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-            }}
+            src={selectedPost.link}
           />
         </div>
       )}
