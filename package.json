@@ -25,7 +25,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate:shex": "shex-codegen generate"
+    "generate:shex": "shex-codegen generate && eslint --fix src/generated"
   },
   "browserslist": {
     "production": [
