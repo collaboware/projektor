@@ -13,6 +13,7 @@ const Post: React.FC<PostProps> = ({ post, onSelect }) => {
   return (
     <div
       key={post.id}
+      title={post.link}
       onClick={() => {
         console.debug(post.id)
         if (onSelect) onSelect()

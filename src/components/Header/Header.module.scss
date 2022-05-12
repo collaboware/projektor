@@ -1,3 +1,5 @@
+@import '../../styles/constants.scss';
+
 .header {
   height: 64px;
   position: sticky;
@@ -18,9 +20,22 @@
   text-align: left;
   margin: initial;
   width: 200px;
+  color: #000;
 }
 
 .user {
   text-align: right;
   width: 200px;
+  color: #000;
+}
+
+@media (max-width: $screen-s) {
+  .loadingOverlay {
+    left: 0;
+  }
+
+  .search,
+  .clear {
+    display: none;
+  }
 }

@@ -1,11 +1,10 @@
 import { login } from '@inrupt/solid-client-authn-browser'
-import React, { useContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
 
 import { analyticsWindow } from '../../AnalyticsWindow'
 import LoadingOverlay from '../../components/LoadingOverlay/LoadingOverlay'
 import Page from '../../components/Page/Page'
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 
 import styles from './LoginPage.module.scss'
 
@@ -15,20 +14,15 @@ interface LoginPageProps {
 
 const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false)
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
   const location = useLocation()
-  const navigate = useNavigate()
-
   useEffect(() => {
-    if (currentSession?.info.isLoggedIn) {
-      const redirect = localStorage.getItem('redirect-after-login')
-      if (redirect) {
-        navigate(redirect)
-      } else {
-        navigate('/')
-      }
+    if ((location.state as { redirectTo: string })?.redirectTo) {
+      localStorage.setItem(
+        'redirect-before-access',
+        (location.state as { redirectTo: string }).redirectTo ?? '/'
+      )
     }
-  }, [currentSession])
+  }, [])
 
   return (
     <Page title="Projektor Web App">
@@ -44,10 +38,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                 e.preventDefault()
                 setIsLoggingIn(true)
                 analyticsWindow.fathom?.trackGoal('GYLKIUUP', 0)
-                localStorage.setItem(
-                  'redirect-after-login',
-                  (location.state as { redirectTo: string })?.redirectTo ?? '/'
-                )
                 login({
                   oidcIssuer: 'https://broker.pod.inrupt.com',
                   clientName: 'Projektor Web App',

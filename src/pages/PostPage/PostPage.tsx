@@ -10,22 +10,19 @@ import { fetchPosts } from '../ProfilePage/ProfilePage'
 
 import styles from './PostPage.module.scss'
 
-const getPostId = (post: PostShape) => {
-  return post.id.substring(
-    post.id.lastIndexOf('/'),
-    post.id.lastIndexOf('-post')
-  )
+export const shortenPostId = (post: string) => {
+  return post.substring(post.lastIndexOf('/') + 1, post.lastIndexOf('-post'))
 }
 
 const PostPage: React.FC = () => {
   // const PostPage: React.FC<PostPageProps> = () => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)
-  const params = useParams<{ host: string; post: string }>()
+  const params = useParams<{ webId: string; post: string }>()
   const selectedImageRef = useRef<HTMLImageElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
 
   const onClose = () => {
@@ -40,16 +37,15 @@ const PostPage: React.FC = () => {
   useEffect(() => {
     setIsLoading(true)
     if (currentSession?.info) {
-      fetchPosts(
-        currentSession.info,
-        `https://${decodeURIComponent(params.host as string)}/profile/card#me`
-      )
+      fetchPosts(currentSession, params.webId as string)
         .then((posts) => {
-          const selected = posts.find((post) => getPostId(post) === params.post)
+          const selected = posts.find(
+            (post) => shortenPostId(post.id) === params.post
+          )
           if (selected) {
             setSelectedPost(selected)
+            setIsLoading(false)
           }
-          setIsLoading(false)
         })
         .catch(() => setIsLoading(false))
     }
@@ -68,14 +64,13 @@ const PostPage: React.FC = () => {
         >
           Close
         </button>
-        {selectedPost ? (
+        {!selectedPost && !isLoading && <h1>This post does not exist</h1>}
+        {selectedPost && (
           <img
             ref={selectedImageRef}
             className={styles.selectedPost}
             src={selectedPost.link}
           />
-        ) : (
-          "This post doesn't exist"
         )}
       </div>
     </Page>

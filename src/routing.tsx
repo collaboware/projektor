@@ -5,20 +5,22 @@ import LoginPage from './pages/LoginPage/LoginPage'
 import PostPage from './pages/PostPage/PostPage'
 import ProfilePage from './pages/ProfilePage/ProfilePage'
 
-const RedirectBeforeLogin: React.FC = () => {
+const RedirectBeforeAccess: React.FC = () => {
   const location = useLocation()
-  console.debug(location.pathname)
-  return <Navigate to="/login" state={{ redirectTo: location.pathname }} />
+
+  return (
+    <Navigate to="/login" state={{ redirectTo: location.pathname }} replace />
+  )
 }
 
 export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
   {
     path: '/',
-    element: isLoggedIn ? <FeedPage /> : <RedirectBeforeLogin />,
+    element: isLoggedIn ? <FeedPage /> : <RedirectBeforeAccess />,
   },
   {
     path: '/search/:term',
-    element: isLoggedIn ? <></> : <RedirectBeforeLogin />,
+    element: isLoggedIn ? <></> : <RedirectBeforeAccess />,
   },
   {
     path: '/login',
@@ -28,12 +30,12 @@ export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
     path: '/user',
     children: [
       {
-        path: ':host',
-        element: isLoggedIn ? <ProfilePage /> : <RedirectBeforeLogin />,
+        path: ':webId',
+        element: isLoggedIn ? <ProfilePage /> : <RedirectBeforeAccess />,
       },
       {
-        path: ':host/:post',
-        element: isLoggedIn ? <PostPage /> : <RedirectBeforeLogin />,
+        path: ':webId/:post',
+        element: isLoggedIn ? <PostPage /> : <RedirectBeforeAccess />,
       },
     ],
   },

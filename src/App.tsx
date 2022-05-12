@@ -1,21 +1,34 @@
-import React, { useEffect, useState } from 'react'
 import {
   getDefaultSession,
   handleIncomingRedirect,
   Session,
 } from '@inrupt/solid-client-authn-browser'
-import { useRoutes } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useRoutes } from 'react-router-dom'
 
-import { CurrentUserAuthContext } from './context/CurrentUserAuthContext'
 import './App.scss'
-import { SolidProfileShape, solidProfile } from './generated/shex'
 import UploadButton from './components/UploadButton/UploadButton'
+import { CurrentUserAuthContext } from './context/CurrentUserAuthContext'
+import { solidProfile, SolidProfileShape } from './generated/shex'
 import { routesConfig } from './routing'
 
 function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [currentSession, setCurrentSession] = useState<Session | null>(null)
   const [currentUser, setCurrentUser] = useState<SolidProfileShape | null>(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (currentSession?.info.isLoggedIn) {
+      const redirect = localStorage.getItem('redirect-before-access')
+      if (redirect) {
+        localStorage.removeItem('redirect-after-login')
+        navigate(redirect, { replace: true })
+      } else {
+        navigate('/', { replace: true })
+      }
+    }
+  }, [currentSession?.info.isLoggedIn])
 
   useEffect(() => {
     setIsLoggingIn(true)

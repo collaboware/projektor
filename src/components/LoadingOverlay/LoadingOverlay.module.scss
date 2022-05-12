@@ -1,4 +1,4 @@
-@import "../../styles/constants.scss";
+@import '../../styles/constants.scss';
 
 .loadingOverlay {
   background-color: rgba(0, 0, 0, 0.5);
@@ -7,6 +7,7 @@
   left: 0;
   height: 100vh;
   width: 100vw;
+  z-index: 2;
 }
 
 .loadingText {

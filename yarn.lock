@@ -9663,10 +9663,10 @@ shex-codegen@^0.3.27:
     own-namespace "^0.4.5"
     prettier "^2.2.1"
 
-shex-methods@^0.1.35:
-  version "0.1.35"
-  resolved "https://registry.yarnpkg.com/shex-methods/-/shex-methods-0.1.35.tgz#0d40e75b6ba1e6fa1e42e80e852a85b2900356c4"
-  integrity sha512-coAQB8ciUWTD6oAmxCApZ/Km/NwKCBz99B/cEM2XxNe3D2s/+Iy1UZbe0aMNqDXL1C6/Oxf/tg1YK/wB5x7RpQ==
+shex-methods@^0.1.36:
+  version "0.1.36"
+  resolved "https://registry.yarnpkg.com/shex-methods/-/shex-methods-0.1.36.tgz#76f3f08870b0bf249b8640c9857ae85aff0036c5"
+  integrity sha512-bab03Khonk3maGrfdjX3vN5EGZ522NG6vsi/EPjWaX4LnCtO2N5HR85Y9o8R8akVL2khCwUaFOBKUfFnYpQ4qA==
   dependencies:
     camelcase "^6.2.0"
     n3 "0.11.3"
