@@ -1,4 +1,4 @@
-@import "../../styles/constants.scss";
+@import '../../styles/constants.scss';
 
 .postGrid {
   width: 100%;
@@ -6,12 +6,6 @@
   grid-template-rows: max-content;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
-}
-
-.post {
-  height: calc((960px - 32px) / 3);
-  background-size: contain;
-  max-width: 100%;
 }
 
 .selectedPostWrapper {
@@ -55,9 +49,5 @@
 
   .postGrid {
     gap: 8px;
-  }
-
-  .post {
-    height: calc((100vw - 16px) / 3);
   }
 }

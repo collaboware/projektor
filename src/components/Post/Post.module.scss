@@ -1,0 +1,13 @@
+@import '../../constants.scss';
+
+.post {
+  height: calc((960px - 32px) / 3);
+  background-size: contain;
+  max-width: 100%;
+}
+
+@media (max-width: $screen-s) {
+  .post {
+    height: calc((100vw - 16px) / 3);
+  }
+}
