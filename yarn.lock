@@ -8959,7 +8959,7 @@ rdf-canonize@^3.0.0:
   dependencies:
     setimmediate "^1.0.5"
 
-rdflib@2.2.12, rdflib@^2.2.19:
+rdflib@2.2.12:
   version "2.2.12"
   resolved "https://registry.yarnpkg.com/rdflib/-/rdflib-2.2.12.tgz#a8af2ce27b5b79a4ee6b688fab54493ddd158791"
   integrity sha512-/iO1lsTTSQDbipkFhyNSP7lMfqcDm6/snK+0kKESw0MKQPha3cjwD0WuchvucV5FPRQ2XgpAN8PgrBOollEdSw==
@@ -9609,15 +9609,15 @@ shex-codegen@^0.3.27:
     own-namespace "^0.4.5"
     prettier "^2.2.1"
 
-shex-methods@^0.1.33:
-  version "0.1.33"
-  resolved "https://registry.yarnpkg.com/shex-methods/-/shex-methods-0.1.33.tgz#351bb160fa486b2f02c8c584438f53b63066d510"
-  integrity sha512-/yfWva4Sq3vxVp96bcH/NtT4Ia5mpTO72okb1AqQ3hYzFbTbCWa5yC8Cz2NPvoA33aZgCtNvRZ2x+hLfmrcf5A==
+shex-methods@^0.1.35:
+  version "0.1.35"
+  resolved "https://registry.yarnpkg.com/shex-methods/-/shex-methods-0.1.35.tgz#0d40e75b6ba1e6fa1e42e80e852a85b2900356c4"
+  integrity sha512-coAQB8ciUWTD6oAmxCApZ/Km/NwKCBz99B/cEM2XxNe3D2s/+Iy1UZbe0aMNqDXL1C6/Oxf/tg1YK/wB5x7RpQ==
   dependencies:
     camelcase "^6.2.0"
     n3 "0.11.3"
     own-namespace "^0.4.5"
-    rdflib "^2.2.19"
+    rdflib "2.2.12"
     shex "^0.9.2"
     uuid "^8.3.2"
 
