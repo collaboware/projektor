@@ -1018,7 +1018,7 @@
     core-js-pure "^3.20.2"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.0", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.0", "@babel/runtime@^7.16.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   version "7.17.9"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.17.9.tgz#d19fbf802d01a8cb6cf053a64e472d42c434ba72"
   integrity sha512-lSiBBvodq29uShpWGNbgFdKYNiFDo5/HIYsaCEY9ff4sb10x9jizo2+pRrSyF4jKZCXqgzuqBOQKbUm90gQwJg==
@@ -2448,11 +2448,6 @@
     "@webassemblyjs/ast" "1.11.1"
     "@xtuc/long" "4.2.2"
 
-"@xmldom/xmldom@^0.8.1":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.2.tgz#b695ff674e8216efa632a3d36ad51ae9843380c0"
-  integrity sha512-+R0juSseERyoPvnBQ/cZih6bpF7IpCXlWbHRoCRzYzqpz6gWHOgf8o4MOEf6KBVuOyqU+gCNLkCWVIJAro8XyQ==
-
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
@@ -3855,7 +3850,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-cross-fetch@^3.0.6, cross-fetch@^3.1.4, cross-fetch@^3.1.5:
+cross-fetch@^3.0.6, cross-fetch@^3.1.4:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
   integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
@@ -7544,14 +7539,6 @@ n3@^1.11.1:
     queue-microtask "^1.1.2"
     readable-stream "^3.6.0"
 
-n3@^1.16.0:
-  version "1.16.1"
-  resolved "https://registry.yarnpkg.com/n3/-/n3-1.16.1.tgz#355f0b4676df1e3ef4bbaf331c078f3bf1098f32"
-  integrity sha512-XhCtfs9pR8TRydTRHdy7arkeJlLB2NscJix6NMe4eP+3RLWv7bxusECt2gNmmRGKvII5j+Pzl+Fx8Ny0NX3UNg==
-  dependencies:
-    queue-microtask "^1.1.2"
-    readable-stream "^3.6.0"
-
 nanoid@^3.3.3:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
@@ -8972,7 +8959,7 @@ rdf-canonize@^3.0.0:
   dependencies:
     setimmediate "^1.0.5"
 
-rdflib@2.2.12:
+rdflib@2.2.12, rdflib@^2.2.19:
   version "2.2.12"
   resolved "https://registry.yarnpkg.com/rdflib/-/rdflib-2.2.12.tgz#a8af2ce27b5b79a4ee6b688fab54493ddd158791"
   integrity sha512-/iO1lsTTSQDbipkFhyNSP7lMfqcDm6/snK+0kKESw0MKQPha3cjwD0WuchvucV5FPRQ2XgpAN8PgrBOollEdSw==
@@ -8984,19 +8971,6 @@ rdflib@2.2.12:
     n3 "^1.11.1"
     solid-namespace "^0.5.1"
     xmldom "^0.6.0"
-
-rdflib@^2.2.19:
-  version "2.2.19"
-  resolved "https://registry.yarnpkg.com/rdflib/-/rdflib-2.2.19.tgz#604cedbf7789a67e044a00019be79581d8c918f5"
-  integrity sha512-dGgvhQOIXEwxFXVoGryHKXq6/F+YOScupi7+/3taH8CdBtKmHv5HvdadH1YOddcbdPyAGyDl6vgcy+4SF866AQ==
-  dependencies:
-    "@babel/runtime" "^7.17.8"
-    "@xmldom/xmldom" "^0.8.1"
-    async "^3.2.3"
-    cross-fetch "^3.1.5"
-    jsonld "^5.2.0"
-    n3 "^1.16.0"
-    solid-namespace "^0.5.2"
 
 react-app-polyfill@^3.0.0:
   version "3.0.0"
@@ -9708,7 +9682,7 @@ sockjs@^0.3.21:
     uuid "^8.3.2"
     websocket-driver "^0.7.4"
 
-solid-namespace@^0.5.1, solid-namespace@^0.5.2:
+solid-namespace@^0.5.1:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/solid-namespace/-/solid-namespace-0.5.2.tgz#b53c853da28b687c30f8d5cdd741d83da90ae06b"
   integrity sha512-pmsKt9rsAOIxnmlgPFgSmWcof8ngv2Q8sx80Qq0OUA05KEtZ3iW4EYM2Ww18aMfPQZK5RdC/4KejNsDUJGrQiw==
