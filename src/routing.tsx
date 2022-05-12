@@ -4,6 +4,7 @@ import { FeedPage } from './pages/FeedPage/FeedPage'
 import LoginPage from './pages/LoginPage/LoginPage'
 import PostPage from './pages/PostPage/PostPage'
 import ProfilePage from './pages/ProfilePage/ProfilePage'
+import SearchPage from './pages/SearchPage/SearchPage'
 
 const RedirectBeforeAccess: React.FC = () => {
   const location = useLocation()
@@ -20,7 +21,7 @@ export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
   },
   {
     path: '/search/:term',
-    element: isLoggedIn ? <></> : <RedirectBeforeAccess />,
+    element: isLoggedIn ? <SearchPage /> : <RedirectBeforeAccess />,
   },
   {
     path: '/login',

@@ -5,6 +5,7 @@ import { useParams } from 'react-router'
 
 import Page from '../../components/Page/Page'
 import PostGrid from '../../components/PostGrid/PostGrid'
+import UploadButton from '../../components/UploadButton/UploadButton'
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import {
   post,
@@ -73,16 +74,11 @@ const ProfilePage: React.FC = () => {
               }
             })
         }
-        console.debug(newPosts, 'lala')
         setPosts([...newPosts])
         setIsLoading(false)
       })
     }
   }, [currentSession, params.webId])
-
-  const getPostGrid = () => {
-    return <PostGrid posts={posts} />
-  }
 
   return (
     <Page
@@ -95,7 +91,14 @@ const ProfilePage: React.FC = () => {
           {userProfile ? userProfile.name : 'Loading User...'}
         </h2>
       )}
-      {getPostGrid()}
+      <PostGrid posts={posts} />
+      {currentSession?.info.isLoggedIn &&
+        currentSession.info.webId ===
+          decodeURIComponent(params.webId as string) && (
+          <div className="footer">
+            <UploadButton />
+          </div>
+        )}
     </Page>
   )
 }

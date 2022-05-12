@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import { SolidProfileShape } from '../../generated/shex'
@@ -11,8 +11,15 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = () => {
-  const [searchTerm, setSearchTerm] = useState('')
+  const [lastRoute, setLastRoute] = useState('')
+  const { term } = useParams<{ term: string }>()
+  const [searchTerm, setSearchTerm] = useState(term)
   const { user } = useContext(CurrentUserAuthContext)
+
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isSearching = location.pathname.startsWith('/search/')
+
   return (
     <div className={styles.header}>
       <Link to={'/'}>
@@ -21,16 +28,31 @@ const Header: React.FC<HeaderProps> = () => {
       <div>
         {user && (
           <input
+            autoFocus
             className={styles.search}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setSearchTerm(e.target?.value)
+              if (!e.target.value) {
+                navigate(lastRoute, { replace: true })
+              } else {
+                if (!isSearching) {
+                  setLastRoute(location.pathname)
+                }
+                navigate(`/search/${encodeURIComponent(e.target.value)}`, {
+                  replace: true,
+                })
+              }
             }}
             value={searchTerm}
             title="Search"
           />
         )}
         <button
-          onClick={() => setSearchTerm('')}
+          onClick={() => {
+            setSearchTerm('')
+            console.debug(lastRoute)
+            navigate(lastRoute, { replace: true })
+          }}
           title="Clear"
           className={styles.clear}
         >

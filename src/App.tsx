@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useRoutes } from 'react-router-dom'
 
 import './App.scss'
-import UploadButton from './components/UploadButton/UploadButton'
 import { CurrentUserAuthContext } from './context/CurrentUserAuthContext'
 import { solidProfile, SolidProfileShape } from './generated/shex'
 import { routesConfig } from './routing'
@@ -65,13 +64,6 @@ function App() {
       }}
     >
       {routing}
-      <div className="app">
-        {currentSession?.info.isLoggedIn && (
-          <div className="footer">
-            <UploadButton />
-          </div>
-        )}
-      </div>
     </CurrentUserAuthContext.Provider>
   )
 }
