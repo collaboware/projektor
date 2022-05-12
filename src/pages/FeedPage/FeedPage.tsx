@@ -1,5 +1,7 @@
 import React from 'react'
 
+import Page from '../../components/Page/Page'
+
 export const FeedPage = () => {
-  return <div>FeedPage</div>
+  return <Page title="Home" />
 }

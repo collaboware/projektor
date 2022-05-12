@@ -15,24 +15,6 @@ body,
   overflow: auto;
 }
 
-.main {
-  height: 100vh;
-  width: 100%;
-  max-width: 80ch;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.login-buttons {
-  width: max-content;
-  display: flex;
-  gap: 8px;
-  font-size: 24px !important;
-}
-
 .footer {
   padding-top: 16px;
   position: sticky;
