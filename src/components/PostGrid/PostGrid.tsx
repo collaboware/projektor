@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
-import { PostShape } from "../../shex/generated";
-import Post from "../Post/Post";
+import { PostShape } from '../../generated/shex'
+import Post from '../Post/Post'
 
-import styles from "./PostGrid.module.scss";
+import styles from './PostGrid.module.scss'
 
 interface PostGridProps {
-  posts: PostShape[];
+  posts: PostShape[]
 }
 
 const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
-  const [selectedPost, setSelectedPost] = useState<PostShape | null>(null);
+  const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
   return (
     <>
       {selectedPost && (
@@ -18,8 +18,8 @@ const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
           <button
             className={styles.closeSelectedPostButton}
             onClick={(e) => {
-              e.preventDefault();
-              setSelectedPost(null);
+              e.preventDefault()
+              setSelectedPost(null)
             }}
           >
             Close
@@ -28,23 +28,23 @@ const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
             className={styles.selectedPost}
             style={{
               background: `url(${selectedPost.link})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
             }}
           />
         </div>
       )}
       <div
         className={styles.postGrid}
-        style={{ overflowY: selectedPost ? "hidden" : "scroll" }}
+        style={{ overflowY: selectedPost ? 'hidden' : 'scroll' }}
       >
         {posts.map((post) => (
           <Post post={post} onSelect={() => setSelectedPost(post)} />
         ))}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default PostGrid;
+export default PostGrid

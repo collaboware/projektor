@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react'
 
-import { PostShape } from "../../shex/generated";
+import { PostShape } from '../../generated/shex'
 
 interface PostProps {
-  post: PostShape;
-  onSelect?: () => void;
+  post: PostShape
+  onSelect?: () => void
 }
 
 const Post: React.FC<PostProps> = ({ post, onSelect }) => {
@@ -12,17 +12,17 @@ const Post: React.FC<PostProps> = ({ post, onSelect }) => {
     <div
       key={post.id}
       onClick={() => {
-        console.debug(post.id);
-        if (onSelect) onSelect();
+        console.debug(post.id)
+        if (onSelect) onSelect()
       }}
       className="post"
       style={{
-        cursor: "pointer",
+        cursor: 'pointer',
         background: `url(${post.link})`,
-        backgroundSize: "cover",
+        backgroundSize: 'cover',
       }}
     />
-  );
-};
+  )
+}
 
-export default Post;
+export default Post
