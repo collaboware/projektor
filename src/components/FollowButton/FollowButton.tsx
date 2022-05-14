@@ -11,8 +11,12 @@ interface FollowButtonProps {
 const FollowButton: React.FC<FollowButtonProps> = ({ webId }) => {
   const { isFollowing, isLoading, toggleFollowing } = useFollowingList()
 
-  if (isLoading) {
-    return null
+  if (isLoading || !toggleFollowing) {
+    return (
+      <button className={styles.followButton} disabled>
+        {isFollowing(webId) ? 'Unfollow' : 'Follow'}
+      </button>
+    )
   }
 
   return (

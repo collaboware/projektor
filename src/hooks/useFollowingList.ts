@@ -75,6 +75,7 @@ export const useFollowingList = () => {
 
   const toggleFollowing = useCallback(
     async (webId: URL) => {
+      setIsLoading(true)
       if (createNewIndex) {
         const followingList = await following.create({
           data: {
@@ -97,6 +98,7 @@ export const useFollowingList = () => {
           setFollowingList(followingList.data)
           setCreateNewIndex(false)
         }
+        setIsLoading(false)
       } else {
         if (followingList?.following && followingUrl && publicTypeIndexUrl) {
           let newFollowings =
@@ -134,10 +136,16 @@ export const useFollowingList = () => {
             }
           }
         }
+        setIsLoading(false)
       }
     },
-    [createNewIndex, followingUrl]
+    [createNewIndex, followingUrl, followingList]
   )
 
-  return { isLoading, isFollowing, toggleFollowing, followingList }
+  return {
+    isLoading,
+    isFollowing,
+    toggleFollowing: isLoading ? null : toggleFollowing,
+    followingList,
+  }
 }
