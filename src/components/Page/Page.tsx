@@ -11,6 +11,7 @@ interface PageProps {
   title: string
   loading?: boolean
   loadingText?: string
+  hideSearch?: boolean
 }
 
 const Page: React.FC<PropsWithChildren<PageProps>> = ({
@@ -18,6 +19,7 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
   title,
   loading,
   loadingText,
+  hideSearch,
 }) => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)
   const app = useRef<HTMLDivElement>(null)
@@ -33,7 +35,7 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
       {loading && loadingText && (
         <LoadingOverlay active={loading} description={loadingText} />
       )}
-      {currentSession && <Header />}
+      {currentSession && <Header hideSearch={hideSearch} />}
       {children}
     </div>
   )

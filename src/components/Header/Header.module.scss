@@ -1,12 +1,9 @@
 @import '../../styles/constants.scss';
 
-.headerWrapper {
-  position: sticky;
-  top: 0;
-  background-color: #fff;
-}
-
 .header {
+  top: 0;
+  position: sticky;
+  background-color: #fff;
   height: 64px;
   padding: 0 16px;
   display: flex;
@@ -33,11 +30,6 @@
 }
 
 @media (max-width: $screen-s) {
-  .headerWrapper {
-    top: 0px;
-    height: 110px;
-  }
-
   .loadingOverlay {
     left: 0;
   }

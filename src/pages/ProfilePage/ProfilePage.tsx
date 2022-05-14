@@ -15,6 +15,7 @@ import {
   solidProfile,
   SolidProfileShape,
 } from '../../generated/shex'
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 import styles from './ProfilePage.module.scss'
 
@@ -52,6 +53,7 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
   const params = useParams<{ webId: string }>()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     setIsLoading(true)
@@ -82,6 +84,7 @@ const ProfilePage: React.FC = () => {
       title={userProfile ? (userProfile.name as string) : 'Profile'}
       loading={isLoading}
       loadingText="Loading Posts..."
+      hideSearch={isMobile}
     >
       {params.webId === currentSession?.info.webId ? null : (
         <div className={styles.header}>

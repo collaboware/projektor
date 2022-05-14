@@ -21,7 +21,9 @@
   z-index: 1;
 }
 
-.closeSelectedPostButton {
+.buttonBar {
+  display: flex;
+  gap: 8px;
   position: absolute;
   z-index: 2;
   bottom: 16px;

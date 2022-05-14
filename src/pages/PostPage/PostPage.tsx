@@ -4,7 +4,11 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
-import { PostShape } from '../../generated/shex'
+import {
+  PostShape,
+  solidProfile,
+  SolidProfileShape,
+} from '../../generated/shex'
 import useClickOutside from '../../hooks/useClickOutside'
 import { fetchPosts } from '../ProfilePage/ProfilePage'
 
@@ -24,6 +28,7 @@ const PostPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
+  const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
 
   const onClose = () => {
     const parentRoute = location.pathname.substring(
@@ -48,6 +53,17 @@ const PostPage: React.FC = () => {
           )
           if (selected) {
             setSelectedPost(selected)
+            solidProfile.fetcher._fetch = currentSession.fetch
+            solidProfile
+              .findOne({
+                where: { id: params.webId },
+                doc: params.webId as string,
+              })
+              .then((profile) => {
+                if (profile.data) {
+                  setUserProfile(profile.data)
+                }
+              })
             setIsLoading(false)
           }
         })
@@ -58,16 +74,27 @@ const PostPage: React.FC = () => {
   return (
     <Page title="Post" loading={isLoading} loadingText="Loading...">
       <div className={styles.selectedPostWrapper}>
-        <button
-          className={styles.closeSelectedPostButton}
-          onClick={(e) => {
-            analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
-            e.preventDefault()
-            onClose()
-          }}
-        >
-          Close
-        </button>
+        <div className={styles.buttonBar}>
+          {userProfile && (
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                navigate(`/user/${encodeURIComponent(userProfile.id)}`)
+              }}
+            >
+              View {userProfile?.name}'s profile
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
+              e.preventDefault()
+              onClose()
+            }}
+          >
+            Close
+          </button>
+        </div>
         {!selectedPost && !isLoading && <h1>This post does not exist</h1>}
         {selectedPost && (
           <img
