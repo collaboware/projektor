@@ -1,7 +1,9 @@
-import React, { PropsWithChildren, useContext } from 'react'
+import React, { PropsWithChildren, useContext, useRef } from 'react'
 import Helmet from 'react-helmet'
+import { useLocation } from 'react-router'
 
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
+import { useScrollState } from '../../utils/hooks/useScrollState'
 import Header from '../Header/Header'
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 
@@ -18,8 +20,13 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
   loadingText,
 }) => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)
+  const app = useRef<HTMLDivElement>(null)
+  const location = useLocation()
+
+  useScrollState(location.pathname, app.current as HTMLDivElement, !loading)
+
   return (
-    <div className="app">
+    <div className="app" ref={app}>
       <Helmet>
         <title>{title}</title>
       </Helmet>

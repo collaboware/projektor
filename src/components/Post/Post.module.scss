@@ -6,8 +6,17 @@
   max-width: 100%;
 }
 
+.fullSize {
+  height: 100vw;
+  max-height: 832px;
+}
+
 @media (max-width: $screen-s) {
   .post {
     height: calc((100vw - 16px) / 3);
+  }
+
+  .fullSize {
+    height: 100vw;
   }
 }

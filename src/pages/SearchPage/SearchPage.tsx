@@ -14,10 +14,11 @@ const SearchPage: React.FC = () => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)
   const [isLoading, setIsLoading] = useState(false)
   const [foundMatches, setFoundMatches] = useState<
-    {
-      user: SolidProfileShape
-      provider: string
-    }[]
+    | {
+        user: SolidProfileShape
+        provider: string
+      }[]
+    | string
   >([])
   const [currentSearch, setCurrentSearch] = useState<ReturnType<
     typeof setTimeout
@@ -53,10 +54,15 @@ const SearchPage: React.FC = () => {
                   }
                 })
             })
-          ).then(() => {
-            setIsLoading(false)
-            setFoundMatches(newMatches)
-          })
+          )
+            .then(() => {
+              setIsLoading(false)
+              setFoundMatches(newMatches)
+            })
+            .catch(() => {
+              setIsLoading(false)
+              setFoundMatches('Not found.')
+            })
         }, 1000)
       )
     }
@@ -65,16 +71,20 @@ const SearchPage: React.FC = () => {
   return (
     <Page title={`Searching for ${term}`}>
       {isLoading ? <h2>Loading...</h2> : null}
-      {foundMatches.map((match) => {
-        return (
-          <div className={styles.results}>
-            <Link to={`/user/${encodeURIComponent(match.user.id)}`}>
-              <h1>{match.user.name}</h1>
-            </Link>
-            <h2>@{match.provider}</h2>
-          </div>
-        )
-      })}
+      {typeof foundMatches === 'string' && !isLoading && (
+        <h2>{foundMatches}</h2>
+      )}
+      {typeof foundMatches !== 'string' &&
+        foundMatches.map((match) => {
+          return (
+            <div className={styles.results} key={match.user.id}>
+              <Link to={`/user/${encodeURIComponent(match.user.id)}`}>
+                <h1>{match.user.name}</h1>
+              </Link>
+              <h2 className={styles.provider}>@{match.provider}</h2>
+            </div>
+          )
+        })}
     </Page>
   )
 }

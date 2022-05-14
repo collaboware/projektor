@@ -1,12 +1,15 @@
 @import '../../styles/constants.scss';
 
-.header {
-  height: 64px;
+.headerWrapper {
   position: sticky;
   top: 0;
   background-color: #fff;
-  display: flex;
+}
+
+.header {
+  height: 64px;
   padding: 0 16px;
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
@@ -30,12 +33,17 @@
 }
 
 @media (max-width: $screen-s) {
+  .headerWrapper {
+    top: 0px;
+    height: 110px;
+  }
+
   .loadingOverlay {
     left: 0;
   }
 
-  .search,
-  .clear {
-    display: none;
+  .searchWrapper {
+    padding-top: 8px;
+    padding-bottom: 16px;
   }
 }

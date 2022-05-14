@@ -3,3 +3,11 @@ $screen-s: 567px;
 $screen-m: 768px;
 $screen-l: 1040px;
 $screen-xl: 1382px;
+
+:export {
+  #{xs}: 320;
+  #{s}: 567;
+  #{m}: 768;
+  #{l}: 1040;
+  #{xl}: 1382;
+}

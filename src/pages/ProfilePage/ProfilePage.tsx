@@ -1,8 +1,9 @@
 import { Session } from '@inrupt/solid-client-authn-browser'
-import { Fetcher, graph } from 'rdflib'
+import { NamedNode } from 'rdflib'
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 
+import FollowButton from '../../components/FollowButton/FollowButton'
 import Page from '../../components/Page/Page'
 import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton from '../../components/UploadButton/UploadButton'
@@ -24,10 +25,6 @@ export const fetchPosts = (session: Session, webId: string) => {
         'profile/card#me',
         `settings/publicTypeIndex.ttl`
       )
-      const store = graph()
-      const fetcher = new Fetcher(store)
-      postIndex.store = store
-      postIndex.fetcher = fetcher
       postIndex.fetcher._fetch = session.fetch
       await postIndex
         .findAll({ doc: publicTypeIndexUrl as string })
@@ -37,7 +34,7 @@ export const fetchPosts = (session: Session, webId: string) => {
               return (
                 await post.findOne({
                   where: { id: postIndex.link },
-                  doc: postIndex.link,
+                  doc: new NamedNode(postIndex.link).doc().uri,
                 })
               ).data
             }) ?? []
@@ -87,9 +84,12 @@ const ProfilePage: React.FC = () => {
       loadingText="Loading Posts..."
     >
       {params.webId === currentSession?.info.webId ? null : (
-        <h2 className={styles.header}>
-          {userProfile ? userProfile.name : 'Loading User...'}
-        </h2>
+        <div className={styles.header}>
+          <h2>{userProfile ? userProfile.name : 'Loading User...'}</h2>
+          {userProfile?.id && (
+            <FollowButton webId={new URL(params.webId as string)} />
+          )}
+        </div>
       )}
       <PostGrid posts={posts} />
       {currentSession?.info.isLoggedIn &&

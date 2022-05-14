@@ -26,7 +26,11 @@ const PostPage: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
 
   const onClose = () => {
-    navigate(location.pathname.substring(0, location.pathname.lastIndexOf('/')))
+    const parentRoute = location.pathname.substring(
+      0,
+      location.pathname.lastIndexOf('/')
+    )
+    navigate((location.state as string) ?? parentRoute)
   }
 
   useClickOutside(selectedImageRef, () => {

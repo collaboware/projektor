@@ -1,6 +1,94 @@
 import { NamedNode, Literal } from 'rdflib'
 import { Shape } from 'shex-methods'
 
+export type FollowingShape = {
+  id: string // the url of a node of this shape
+  following?: string | string[] // The webId of somebody that is followed
+} & {
+  type: FollowingShapeType.Following // Defines the node as somebody that is followed (from projektor)
+}
+
+export type FollowingShapeCreateArgs = {
+  id?: string | NamedNode // the url to match or create the node with e.g. 'https://example.com#this', 'https://example.com/profile/card#me'
+  following?: URL | NamedNode | (URL | NamedNode)[] // The webId of somebody that is followed
+} & {
+  type: FollowingShapeType.Following // Defines the node as somebody that is followed (from projektor)
+}
+
+export type FollowingShapeUpdateArgs = Partial<FollowingShapeCreateArgs>
+
+export type FollowingShapeIndex = {
+  id: string // the url of a node of this shape
+  followingIndex: string // The index of the webIds that are followed
+} & {
+  type: FollowingShapeIndexType.FollowingIndex // Defines the node as somebody that is followed (from projektor)
+}
+
+export type FollowingShapeIndexCreateArgs = {
+  id?: string | NamedNode // the url to match or create the node with e.g. 'https://example.com#this', 'https://example.com/profile/card#me'
+  followingIndex: URL | NamedNode // The index of the webIds that are followed
+} & {
+  type: FollowingShapeIndexType.FollowingIndex // Defines the node as somebody that is followed (from projektor)
+}
+
+export type FollowingShapeIndexUpdateArgs =
+  Partial<FollowingShapeIndexCreateArgs>
+
+export enum FollowingShapeType {
+  Following = 'https://dips.projektor.technology/projektor/Following',
+}
+
+export enum FollowingShapeIndexType {
+  FollowingIndex = 'https://dips.projektor.technology/projektor/FollowingIndex',
+}
+
+export enum FollowingShapeContext {
+  type = 'rdf:type',
+  following = 'prk:following',
+}
+
+export enum FollowingShapeIndexContext {
+  type = 'rdf:type',
+  followingIndex = 'prk:followingIndex',
+}
+
+export const projektorFollowerShex = `
+PREFIX prk: <https://dips.projektor.technology/projektor/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+prk:FollowingShape EXTRA a {
+    a [ prk:Following ]
+      // rdfs:comment  "Defines the node as somebody that is followed (from projektor)" ;
+    prk:following IRI *
+      // rdfs:comment  "The webId of somebody that is followed" ;
+}
+
+prk:FollowingShapeIndex EXTRA a {
+    a [ prk:FollowingIndex ]
+      // rdfs:comment  "Defines the node as somebody that is followed (from projektor)" ;
+    prk:followingIndex IRI
+      // rdfs:comment  "The index of the webIds that are followed" ;
+}
+`
+
+export const following = new Shape<FollowingShape, FollowingShapeCreateArgs>({
+  id: 'https://dips.projektor.technology/projektor/FollowingShape',
+  shape: projektorFollowerShex,
+  context: FollowingShapeContext,
+  type: FollowingShapeType,
+})
+
+export const followingIndex = new Shape<
+  FollowingShapeIndex,
+  FollowingShapeIndexCreateArgs
+>({
+  id: 'https://dips.projektor.technology/projektor/FollowingShapeIndex',
+  shape: projektorFollowerShex,
+  context: FollowingShapeIndexContext,
+  type: FollowingShapeIndexType,
+})
+
 export type PostShape = {
   id: string // the url of a node of this shape
   caption?: string // The caption of a post

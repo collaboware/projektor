@@ -1,0 +1,17 @@
+PREFIX prk: <https://dips.projektor.technology/projektor/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+prk:FollowingShape EXTRA a {
+    a [ prk:Following ]
+      // rdfs:comment  "Defines the node as somebody that is followed (from projektor)" ;
+    prk:following IRI *
+      // rdfs:comment  "The webId of somebody that is followed" ;
+}
+
+prk:FollowingShapeIndex EXTRA a {
+    a [ prk:FollowingIndex ]
+      // rdfs:comment  "Defines the node as somebody that is followed (from projektor)" ;
+    prk:followingIndex IRI
+      // rdfs:comment  "The index of the webIds that are followed" ;
+}

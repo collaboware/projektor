@@ -3453,6 +3453,11 @@ cjs-module-lexer@^1.0.0:
   resolved "https://registry.yarnpkg.com/cjs-module-lexer/-/cjs-module-lexer-1.2.2.tgz#9f84ba3244a512f3a54e5277e8eef4c489864e40"
   integrity sha512-cOU9usZw8/dXIXKtwa8pM0OTJQuJkxMN6w30csNRUerHfeQ5R6U3kkU/FtJeIf3M202OHfY2U8ccInBG7/xogA==
 
+classnames@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
+  integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
+
 clean-css@^5.2.2:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.3.0.tgz#ad3d8238d5f3549e83d5f87205189494bc7cbb59"
@@ -9663,10 +9668,10 @@ shex-codegen@^0.3.27:
     own-namespace "^0.4.5"
     prettier "^2.2.1"
 
-shex-methods@^0.1.36:
-  version "0.1.36"
-  resolved "https://registry.yarnpkg.com/shex-methods/-/shex-methods-0.1.36.tgz#76f3f08870b0bf249b8640c9857ae85aff0036c5"
-  integrity sha512-bab03Khonk3maGrfdjX3vN5EGZ522NG6vsi/EPjWaX4LnCtO2N5HR85Y9o8R8akVL2khCwUaFOBKUfFnYpQ4qA==
+shex-methods@^0.1.44:
+  version "0.1.44"
+  resolved "https://registry.yarnpkg.com/shex-methods/-/shex-methods-0.1.44.tgz#c25379fc99fece6b7372eb9f4d5cc74aee85efca"
+  integrity sha512-pV9zYpUdFg4ZWC1KYBRjz9YEenIuIcTZaGs74Kf1IPHd2+RS5hkLNIAxOUuw1UeNZnATZ1WMWsS08436w4/G8g==
   dependencies:
     camelcase "^6.2.0"
     n3 "0.11.3"
