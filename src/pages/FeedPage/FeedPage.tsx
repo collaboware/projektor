@@ -14,7 +14,7 @@ export const FeedPage = () => {
 
   return (
     <Page title="Home" loading={isLoading}>
-      {isLoading && <h2>Loading your feed...</h2>}
+      {isLoading && <h2>Loading...</h2>}
       <div>
         {feed.map(({ post, user }) => {
           return (

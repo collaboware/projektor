@@ -32,10 +32,13 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
             if (!e.target.value) {
               navigate(lastRoute ?? '/', { replace: true })
             } else {
-              navigate(`/search/${encodeURIComponent(e.target.value)}`, {
-                replace: true,
-                state: isSearching ? location.state : location.pathname,
-              })
+              navigate(
+                `/search/${encodeURIComponent(e.target.value.toLowerCase())}`,
+                {
+                  replace: true,
+                  state: isSearching ? location.state : location.pathname,
+                }
+              )
             }
           }}
           value={searchTerm}
