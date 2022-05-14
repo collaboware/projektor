@@ -38,6 +38,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                 e.preventDefault()
                 setIsLoggingIn(true)
                 analyticsWindow.fathom?.trackGoal('GYLKIUUP', 0)
+                localStorage.clear()
                 login({
                   oidcIssuer: 'https://broker.pod.inrupt.com',
                   clientName: 'Projektor Web App',
