@@ -59,14 +59,14 @@ function App() {
 
   return (
     <RecoilRoot>
-    <CurrentUserAuthContext.Provider
-      value={{
-        session: currentSession as Session,
-        user: currentUser as SolidProfileShape,
-      }}
-    >
-      {routing}
-    </CurrentUserAuthContext.Provider>
+      <CurrentUserAuthContext.Provider
+        value={{
+          session: currentSession as Session,
+          user: currentUser as SolidProfileShape,
+        }}
+      >
+        {routing}
+      </CurrentUserAuthContext.Provider>
     </RecoilRoot>
   )
 }
