@@ -5,6 +5,7 @@ import {
 } from '@inrupt/solid-client-authn-browser'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useRoutes } from 'react-router-dom'
+import { RecoilRoot } from 'recoil'
 
 import './App.scss'
 import { CurrentUserAuthContext } from './context/CurrentUserAuthContext'
@@ -57,6 +58,7 @@ function App() {
   )
 
   return (
+    <RecoilRoot>
     <CurrentUserAuthContext.Provider
       value={{
         session: currentSession as Session,
@@ -65,6 +67,7 @@ function App() {
     >
       {routing}
     </CurrentUserAuthContext.Provider>
+    </RecoilRoot>
   )
 }
 

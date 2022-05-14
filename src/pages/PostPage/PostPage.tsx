@@ -5,7 +5,7 @@ import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import { PostShape } from '../../generated/shex'
-import useClickOutside from '../../utils/hooks/useClickOutside'
+import useClickOutside from '../../hooks/useClickOutside'
 import { fetchPosts } from '../ProfilePage/ProfilePage'
 
 import styles from './PostPage.module.scss'
