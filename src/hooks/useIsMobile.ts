@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import screenSizes from '../../constants.scss'
+import screenSizes from '../constants.scss'
 
 export const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false)

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router'
 import Page from '../../components/Page/Page'
 import Post from '../../components/Post/Post'
 import UploadButton from '../../components/UploadButton/UploadButton'
-import { useFeed } from '../../utils/hooks/useFeed'
+import { useFeed } from '../../hooks/useFeed'
 import { shortenPostId } from '../PostPage/PostPage'
 
 export const FeedPage = () => {

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react'
 
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
-import { PostShape } from '../../generated/shex'
-import { fetchPosts } from '../../pages/ProfilePage/ProfilePage'
+import { CurrentUserAuthContext } from '../context/CurrentUserAuthContext'
+import { PostShape } from '../generated/shex'
+import { fetchPosts } from '../pages/ProfilePage/ProfilePage'
 
 import { useFollowingList } from './useFollowingList'
 

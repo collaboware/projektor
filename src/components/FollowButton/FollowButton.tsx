@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useFollowingList } from '../../utils/hooks/useFollowingList'
+import { useFollowingList } from '../../hooks/useFollowingList'
 
 import styles from './FollowButton.module.scss'
 

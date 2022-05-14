@@ -3,7 +3,7 @@ import Helmet from 'react-helmet'
 import { useLocation } from 'react-router'
 
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
-import { useScrollState } from '../../utils/hooks/useScrollState'
+import { useScrollState } from '../../hooks/useScrollState'
 import Header from '../Header/Header'
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 

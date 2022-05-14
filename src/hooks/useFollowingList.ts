@@ -1,13 +1,13 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
+import { CurrentUserAuthContext } from '../context/CurrentUserAuthContext'
 import {
   following,
   followingIndex,
   FollowingShape,
   FollowingShapeIndexType,
   FollowingShapeType,
-} from '../../generated/shex'
+} from '../generated/shex'
 
 export const useFollowingList = () => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)

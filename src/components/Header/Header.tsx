@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import { SolidProfileShape } from '../../generated/shex'
-import { useIsMobile } from '../../utils/hooks/useIsMobile'
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 import styles from './Header.module.scss'
 
