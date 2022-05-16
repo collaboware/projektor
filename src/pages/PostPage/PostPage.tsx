@@ -1,15 +1,16 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import { useRecoilState } from 'recoil'
 
 import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import {
-  PostShape,
   solidProfile,
-  SolidProfileShape,
 } from '../../generated/shex'
 import useClickOutside from '../../hooks/useClickOutside'
+import { authState } from '../../state/auth'
+import { postState } from '../../state/post'
+import { userState } from '../../state/user'
 import { fetchPosts } from '../ProfilePage/ProfilePage'
 
 import styles from './PostPage.module.scss'
@@ -19,16 +20,21 @@ export const shortenPostId = (post: string) => {
 }
 
 const PostPage: React.FC = () => {
-  // const PostPage: React.FC<PostPageProps> = () => {
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
+  const [auth, _] = useRecoilState(authState)
+  // const { session: currentSession } = useContext(CurrentUserAuthContext)
   const params = useParams<{ webId: string; post: string }>()
   const selectedImageRef = useRef<HTMLImageElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
 
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
-  const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
+  // const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
+  // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
+
+  const [userData, setUserData] = useRecoilState(userState)
+  const [post, setPost] = useRecoilState(postState)
+  const {session} = auth;
+
 
   const onClose = () => {
     const parentRoute = location.pathname.substring(
@@ -45,15 +51,15 @@ const PostPage: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true)
-    if (currentSession?.info) {
-      fetchPosts(currentSession, params.webId as string)
+    if (session?.info) {
+      fetchPosts(session, params.webId as string)
         .then((posts) => {
           const selected = posts.find(
             (post) => shortenPostId(post.id) === params.post
           )
           if (selected) {
-            setSelectedPost(selected)
-            solidProfile.fetcher._fetch = currentSession.fetch
+            setPost({...post, current: selected})
+            solidProfile.fetcher._fetch = session.fetch
             solidProfile
               .findOne({
                 where: { id: params.webId },
@@ -61,7 +67,7 @@ const PostPage: React.FC = () => {
               })
               .then((profile) => {
                 if (profile.data) {
-                  setUserProfile(profile.data)
+                  setUserData({...userData, current: profile.data})
                 }
               })
             setIsLoading(false)
@@ -71,20 +77,25 @@ const PostPage: React.FC = () => {
     }
   }, [])
 
+  const renderProfileButton = () => {
+    if (userData.current?.id){
+      return             <button
+      onClick={(e) => {
+        e.preventDefault()
+        userData.current?.id&&navigate(`/user/${encodeURIComponent(userData.current.id)}`)
+        
+      }}
+    >
+      View {userData.current?.name}'s profile
+    </button>
+    }
+  }
+
   return (
     <Page title="Post" loading={isLoading} loadingText="Loading...">
       <div className={styles.selectedPostWrapper}>
         <div className={styles.buttonBar}>
-          {userProfile && (
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                navigate(`/user/${encodeURIComponent(userProfile.id)}`)
-              }}
-            >
-              View {userProfile?.name}'s profile
-            </button>
-          )}
+          {renderProfileButton()}
           <button
             onClick={(e) => {
               analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
@@ -95,12 +106,12 @@ const PostPage: React.FC = () => {
             Close
           </button>
         </div>
-        {!selectedPost && !isLoading && <h1>This post does not exist</h1>}
-        {selectedPost && (
+        {!post.current && !isLoading && <h1>This post does not exist</h1>}
+        {post.current && (
           <img
             ref={selectedImageRef}
             className={styles.selectedPost}
-            src={selectedPost.link}
+            src={post.current.link}
           />
         )}
       </div>

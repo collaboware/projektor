@@ -1,16 +1,20 @@
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router'
+import { useRecoilState } from 'recoil'
 
 import Page from '../../components/Page/Page'
 import Post from '../../components/Post/Post'
 import UploadButton from '../../components/UploadButton/UploadButton'
 import { useFeed } from '../../hooks/useFeed'
+import { authState } from '../../state/auth'
 import { shortenPostId } from '../PostPage/PostPage'
 
 export const FeedPage = () => {
-  const { feed, isLoading } = useFeed()
+  const [auth, _] = useRecoilState(authState) 
+  const { feed, isLoading } = useFeed(auth.session)
   const navigate = useNavigate()
   const location = useLocation()
+  console.log("Auth in header", auth);
 
   return (
     <Page title="Home" loading={isLoading}>

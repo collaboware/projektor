@@ -1,21 +1,23 @@
 import { Session } from '@inrupt/solid-client-authn-browser'
 import { NamedNode } from 'rdflib'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
+import { useRecoilState } from 'recoil'
 
 import FollowButton from '../../components/FollowButton/FollowButton'
 import Page from '../../components/Page/Page'
 import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton from '../../components/UploadButton/UploadButton'
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import {
   post,
   postIndex,
   PostShape,
   solidProfile,
-  SolidProfileShape,
 } from '../../generated/shex'
 import { useIsMobile } from '../../hooks/useIsMobile'
+import { authState } from '../../state/auth'
+import { postsState } from '../../state/posts'
+import { userState } from '../../state/user'
 
 import styles from './ProfilePage.module.scss'
 
@@ -48,20 +50,24 @@ export const fetchPosts = (session: Session, webId: string) => {
 }
 
 const ProfilePage: React.FC = () => {
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
-  const [posts, setPosts] = useState<PostShape[]>([])
+  // const { session: currentSession } = useContext(CurrentUserAuthContext)
+  // const [posts, setPosts] = useState<PostShape[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
+  // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
+  const [auth, _] = useRecoilState(authState)
+  const [userProfile, setUserProfile] = useRecoilState(userState)
+  const [posts, setPosts] = useRecoilState(postsState)
   const params = useParams<{ webId: string }>()
   const isMobile = useIsMobile()
+  const {session} = auth;
 
   useEffect(() => {
     setIsLoading(true)
     const webId = decodeURIComponent(params.webId as string)
-    if (currentSession?.info) {
-      fetchPosts(currentSession, webId).then((newPosts) => {
-        if (currentSession.info.webId !== params.webId) {
-          solidProfile.fetcher._fetch = currentSession.fetch
+    if (session?.info) {
+      fetchPosts(session, webId).then((newPosts) => {
+        if (session.info.webId !== params.webId) {
+          solidProfile.fetcher._fetch = session.fetch
           solidProfile
             .findOne({
               where: { id: webId },
@@ -69,34 +75,34 @@ const ProfilePage: React.FC = () => {
             })
             .then((profile) => {
               if (profile.data) {
-                setUserProfile(profile.data)
+                setUserProfile({...userProfile, current: profile.data})
               }
             })
         }
-        setPosts([...newPosts])
+        setPosts({posts: [...newPosts]})
         setIsLoading(false)
       })
     }
-  }, [currentSession, params.webId])
+  }, [session, params.webId])
 
   return (
     <Page
-      title={userProfile ? (userProfile.name as string) : 'Profile'}
+      title={userProfile ? (userProfile.current?.name as string) : 'Profile'}
       loading={isLoading}
       loadingText="Loading Posts..."
       hideSearch={isMobile}
     >
-      {params.webId === currentSession?.info.webId ? null : (
+      {params.webId === userProfile.current?.id ? null : (
         <div className={styles.header}>
-          <h2>{userProfile ? userProfile.name : 'Loading User...'}</h2>
-          {userProfile?.id && (
+          <h2>{userProfile ? userProfile.current?.name : 'Loading User...'}</h2>
+          {userProfile.current?.id && (
             <FollowButton webId={new URL(params.webId as string)} />
           )}
         </div>
       )}
-      <PostGrid posts={posts} />
-      {currentSession?.info.isLoggedIn &&
-        currentSession.info.webId ===
+      <PostGrid posts={posts.posts} />
+      {session?.info.isLoggedIn &&
+        session.info.webId ===
           decodeURIComponent(params.webId as string) && (
           <div className="footer">
             <UploadButton />

@@ -15,6 +15,8 @@ interface LoginPageProps {
 const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const location = useLocation()
+
+  // set redirect url for auth process
   useEffect(() => {
     if ((location.state as { redirectTo: string })?.redirectTo) {
       localStorage.setItem(
