@@ -42,29 +42,31 @@ export const FeedPage = () => {
           Grid
         </label>
       </div>
-      <div className={styles.feed}>
-        {!urlParams.get('feed') || urlParams.get('feed') === 'stream' ? (
-          feed.map(({ post, user }) => {
-            return (
-              <Post
-                key={post.id}
-                post={post}
-                fullSize={true}
-                onSelect={() => {
-                  navigate(
-                    `/user/${encodeURIComponent(user)}/${shortenPostId(
-                      post.id
-                    )}`,
-                    { state: location.pathname + location.search }
-                  )
-                }}
-              />
-            )
-          })
-        ) : (
-          <PostGrid feed={feed} />
-        )}
-      </div>
+      {feed && (
+        <div className={styles.feed}>
+          {!urlParams.get('feed') || urlParams.get('feed') === 'stream' ? (
+            feed.map(({ post, user }) => {
+              return (
+                <Post
+                  key={post.id}
+                  post={post}
+                  fullSize={true}
+                  onSelect={() => {
+                    navigate(
+                      `/user/${encodeURIComponent(user)}/${shortenPostId(
+                        post.id
+                      )}`,
+                      { state: location.pathname + location.search }
+                    )
+                  }}
+                />
+              )
+            })
+          ) : (
+            <PostGrid feed={feed} />
+          )}
+        </div>
+      )}
       <div className="footer">
         <UploadButton />
       </div>
