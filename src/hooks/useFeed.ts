@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
+import { useRecoilState } from 'recoil'
 
 import { CurrentUserAuthContext } from '../context/CurrentUserAuthContext'
 import { PostShape } from '../generated/shex'
 import { fetchPosts } from '../pages/ProfilePage/ProfilePage'
+import { feedState } from '../state/feed'
 
 import { useFollowingList } from './useFollowingList'
 
@@ -10,7 +12,11 @@ export const useFeed = () => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)
   const { followingList } = useFollowingList()
   const [isLoading, setIsLoading] = useState(true)
-  const [feed, setFeed] = useState<{ post: PostShape; user: string }[]>([])
+  const [{ feed }, setFeedState] = useRecoilState(feedState)
+
+  const setFeed = (feed: { post: PostShape; user: string }[]) => {
+    setFeedState({ feed })
+  }
 
   useEffect(() => {
     if (
@@ -51,6 +57,10 @@ export const useFeed = () => {
       })
     }
   }, [followingList])
+
+  if (feed) {
+    return { isLoading: false, feed }
+  }
 
   return { isLoading, feed }
 }

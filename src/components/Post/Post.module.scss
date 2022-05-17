@@ -2,21 +2,39 @@
 
 .post {
   height: calc((960px - 32px) / 3);
-  background-size: contain;
-  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.wrapper {
+  width: max-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fullSizeWrapper {
+  width: 832px;
+  max-height: 832px;
+  overflow: hidden;
+}
+
+.gridWrapper {
+  max-width: calc((960px - 32px) / 3);
+  width: 100%;
 }
 
 .fullSize {
-  height: 100vw;
-  max-height: 832px;
+  height: max-content !important;
+  width: 100%;
 }
 
-@media (max-width: $screen-s) {
-  .post {
-    height: calc((100vw - 16px) / 3);
+@media (max-width: $screen-l) {
+  .fullSizeWrapper {
+    width: 100vw;
+    max-height: 100vw;
   }
 
-  .fullSize {
-    height: 100vw;
+  .post {
+    height: calc((100vw - 16px) / 3);
   }
 }

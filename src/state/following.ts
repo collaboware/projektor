@@ -1,12 +1,10 @@
-import { Session } from "@inrupt/solid-client-authn-browser";
-import { atom } from "recoil";
-import { SolidProfileShape } from "../generated/shex";
+import { atom } from 'recoil'
 
-export interface FollowingState {following: SolidProfileShape[] | []}
+import { FollowingShape } from '../generated/shex'
+import { localPersist } from '../persistState'
 
-export const followingState = atom<FollowingState>({
-    key: 'followingState', 
-    default: {
-        following: []
-    }, 
-  });
+export const followingState = atom<FollowingShape | null>({
+  key: 'followingState',
+  effects: [localPersist<FollowingShape | null>()],
+  default: null,
+})

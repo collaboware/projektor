@@ -8,22 +8,38 @@ import Post from '../Post/Post'
 import styles from './PostGrid.module.scss'
 
 interface PostGridProps {
-  posts: PostShape[]
+  posts?: PostShape[]
+  feed?: { post: PostShape; user: string }[]
 }
 
-const PostGrid: React.FC<PostGridProps> = ({ posts }) => {
+const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
   const navigate = useNavigate()
-  const postGrid = useMemo(
-    () =>
-      posts.map((post) => (
+  const postGrid = useMemo(() => {
+    if (feed) {
+      return feed.map(({ post, user }) => (
         <Post
+          grid
+          post={post}
+          onSelect={() =>
+            navigate(
+              `/user/${encodeURIComponent(user)}/${shortenPostId(post.id)}`,
+              { state: location.pathname + location.search }
+            )
+          }
+          key={post.id}
+        />
+      ))
+    }
+    if (posts)
+      return posts.map((post) => (
+        <Post
+          grid
           post={post}
           onSelect={() => navigate(shortenPostId(post.id))}
           key={post.id}
         />
-      )),
-    [posts]
-  )
+      ))
+  }, [posts, feed])
   return <div className={styles.postGrid}>{postGrid}</div>
 }
 

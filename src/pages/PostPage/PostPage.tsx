@@ -85,15 +85,17 @@ const PostPage: React.FC = () => {
               View {userProfile?.name}'s profile
             </button>
           )}
-          <button
-            onClick={(e) => {
-              analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
-              e.preventDefault()
-              onClose()
-            }}
-          >
-            Close
-          </button>
+          {location.state ? (
+            <button
+              onClick={(e) => {
+                analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
+                e.preventDefault()
+                onClose()
+              }}
+            >
+              Close
+            </button>
+          ) : null}
         </div>
         {!selectedPost && !isLoading && <h1>This post does not exist</h1>}
         {selectedPost && (

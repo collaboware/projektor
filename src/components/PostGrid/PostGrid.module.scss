@@ -9,7 +9,7 @@
   overflow-y: auto;
 }
 
-@media (max-width: $screen-s) {
+@media (max-width: $screen-l) {
   .postGrid {
     gap: 8px;
   }

@@ -18,7 +18,7 @@
   transform: translateY(-50%) translateX(-50%);
 }
 
-@media (max-width: $screen-s) {
+@media (max-width: $screen-l) {
   .loadingOverlay {
     left: 0;
   }

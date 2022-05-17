@@ -8,24 +8,34 @@ import styles from './Post.module.scss'
 interface PostProps {
   post: PostShape
   fullSize?: boolean
+  grid?: boolean
   onSelect?: () => void
 }
 
-const Post: React.FC<PostProps> = ({ post, fullSize, onSelect }) => {
+const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
   return (
     <div
-      key={post.id}
-      title={post.link}
-      onClick={() => {
-        if (onSelect) onSelect()
-      }}
-      className={classNames(styles.post, { [styles.fullSize]: fullSize })}
-      style={{
-        cursor: 'pointer',
-        background: `url(${post.link})`,
-        backgroundSize: 'cover',
-      }}
-    />
+      className={classNames(styles.wrapper, {
+        [styles.fullSizeWrapper]: fullSize,
+        [styles.gridWrapper]: grid,
+      })}
+    >
+      <img
+        key={post.id}
+        title={post.link}
+        onClick={() => {
+          if (onSelect) onSelect()
+        }}
+        className={classNames(styles.post, {
+          [styles.fullSize]: fullSize,
+        })}
+        src={post.link}
+        loading={'lazy'}
+        style={{
+          cursor: 'pointer',
+        }}
+      />
+    </div>
   )
 }
 

@@ -15,7 +15,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: auto;
+  max-height: 100vh;
   max-width: 100%;
   margin: auto;
   z-index: 1;
@@ -31,7 +31,7 @@
   transform: translateX(-50%);
 }
 
-@media (max-width: $screen-s) {
+@media (max-width: $screen-l) {
   .selectedPostWrapper {
     width: 100vw;
   }

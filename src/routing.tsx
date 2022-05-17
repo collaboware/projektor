@@ -10,7 +10,11 @@ const RedirectBeforeAccess: React.FC = () => {
   const location = useLocation()
 
   return (
-    <Navigate to="/login" state={{ redirectTo: location.pathname }} replace />
+    <Navigate
+      to="/login"
+      state={{ redirectTo: location.pathname + location.search }}
+      replace
+    />
   )
 }
 

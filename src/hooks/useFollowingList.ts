@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useRecoilState } from 'recoil'
 
 import { CurrentUserAuthContext } from '../context/CurrentUserAuthContext'
 import {
@@ -8,13 +9,12 @@ import {
   FollowingShapeIndexType,
   FollowingShapeType,
 } from '../generated/shex'
+import { followingState } from '../state/following'
 
 export const useFollowingList = () => {
   const { session: currentSession } = useContext(CurrentUserAuthContext)
   const [isLoading, setIsLoading] = useState(false)
-  const [followingList, setFollowingList] = useState<FollowingShape | null>(
-    null
-  )
+  const [followingList, setFollowingList] = useRecoilState(followingState)
   const [createNewIndex, setCreateNewIndex] = useState(false)
   const publicTypeIndexUrl = useMemo(
     () =>
@@ -104,7 +104,7 @@ export const useFollowingList = () => {
           let newFollowings =
             typeof followingList?.following === 'string'
               ? [followingList.following]
-              : followingList?.following
+              : [...followingList.following]
           if (isFollowing(webId)) {
             newFollowings = newFollowings?.filter(
               (following) => following !== webId.href
@@ -141,6 +141,10 @@ export const useFollowingList = () => {
     },
     [createNewIndex, followingUrl, followingList]
   )
+
+  if (followingList) {
+    return { isLoading: false, isFollowing, toggleFollowing, followingList }
+  }
 
   return {
     isLoading,
