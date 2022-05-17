@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react'
+import React, {  useState } from 'react'
 import { Fetcher, Store } from 'rdflib'
+import { useRecoilState } from 'recoil'
 
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import {
   post,
   postIndex,
@@ -10,6 +10,7 @@ import {
 } from '../../generated/shex'
 import { analyticsWindow } from '../../AnalyticsWindow'
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
+import { authState } from '../../state/auth'
 
 import styles from './UploadButton.module.scss'
 
@@ -18,7 +19,8 @@ interface UploadButtonProps {
 }
 
 const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
+  const [auth, _] = useRecoilState(authState)
+  const currentSession = auth.session
   const [isUploading, setIsUploading] = useState(false)
   return (
     <>

@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useContext, useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
 
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import { useIsMobile } from '../../hooks/useIsMobile'
+import { authState } from '../../state/auth'
 
 import styles from './Header.module.scss'
 
@@ -13,7 +14,8 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
   const { term } = useParams<{ term: string }>()
   const [searchTerm, setSearchTerm] = useState(term)
-  const { user } = useContext(CurrentUserAuthContext)
+  const [auth, _] = useRecoilState(authState)
+  const {user} = auth
 
   const isMobile = useIsMobile()
   const navigate = useNavigate()

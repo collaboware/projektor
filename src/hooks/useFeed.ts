@@ -1,15 +1,14 @@
-import { useContext, useEffect, useState } from 'react'
+import { Session } from '@inrupt/solid-client-authn-browser'
+import { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { CurrentUserAuthContext } from '../context/CurrentUserAuthContext'
 import { PostShape } from '../generated/shex'
 import { fetchPosts } from '../pages/ProfilePage/ProfilePage'
 import { feedState } from '../state/feed'
 
 import { useFollowingList } from './useFollowingList'
 
-export const useFeed = () => {
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
+export const useFeed = (currentSession: Session | null) => {
   const { followingList } = useFollowingList()
   const [isLoading, setIsLoading] = useState(true)
   const [{ feed }, setFeedState] = useRecoilState(feedState)
