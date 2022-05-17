@@ -1,12 +1,14 @@
-import { atom } from "recoil";
+import { atom } from 'recoil'
 
-import { PostShape } from "../generated/shex";
+import { PostShape } from '../generated/shex'
 
-export interface PostState {current:PostShape | null}
+export interface PostState {
+  post: PostShape | null
+}
 
 export const postState = atom<PostState>({
-    key: 'postState', 
-    default: {
-        current: null,
-    }, 
-  });
+  key: 'postState',
+  default: {
+    post: null,
+  },
+})

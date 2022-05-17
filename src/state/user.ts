@@ -3,8 +3,8 @@ import { atom } from 'recoil'
 import { SolidProfileShape } from '../generated/shex'
 
 export interface UserState {
-  hasFollowingList: boolean
-  current: SolidProfileShape | null
+  hasFollowingList?: boolean
+  profile: SolidProfileShape | null
 }
 
 export const userState = atom<UserState>({
@@ -12,6 +12,6 @@ export const userState = atom<UserState>({
 
   default: {
     hasFollowingList: false,
-    current: null,
+    profile: null,
   },
 })

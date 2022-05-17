@@ -9,7 +9,7 @@ export const useScrollState = (
 ) => {
   useEffect(() => {
     const scrollState = getScrollState(page)
-    if (getScrollState(page) && ready) {
+    if (scrollState && ready) {
       const { scrollY } = scrollState
       element?.scrollTo({ top: scrollY })
     }
@@ -19,10 +19,9 @@ export const useScrollState = (
     }
 
     if (ready) {
-      save()
       element?.addEventListener('scroll', save)
     }
 
     return () => element?.removeEventListener('scroll', save)
-  }, [ready])
+  }, [ready, element])
 }

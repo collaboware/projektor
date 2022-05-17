@@ -8,12 +8,7 @@ import FollowButton from '../../components/FollowButton/FollowButton'
 import Page from '../../components/Page/Page'
 import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton from '../../components/UploadButton/UploadButton'
-import {
-  post,
-  postIndex,
-  PostShape,
-  solidProfile,
-} from '../../generated/shex'
+import { post, postIndex, PostShape, solidProfile } from '../../generated/shex'
 import { useIsMobile } from '../../hooks/useIsMobile'
 import { authState } from '../../state/auth'
 import { postsState } from '../../state/posts'
@@ -55,11 +50,11 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
   // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
   const [auth, _] = useRecoilState(authState)
-  const [userProfile, setUserProfile] = useRecoilState(userState)
+  const [{ profile }, setUserProfile] = useRecoilState(userState)
   const [posts, setPosts] = useRecoilState(postsState)
   const params = useParams<{ webId: string }>()
   const isMobile = useIsMobile()
-  const {session} = auth;
+  const { session } = auth
 
   useEffect(() => {
     setIsLoading(true)
@@ -75,11 +70,11 @@ const ProfilePage: React.FC = () => {
             })
             .then((profile) => {
               if (profile.data) {
-                setUserProfile({...userProfile, current: profile.data})
+                setUserProfile({ profile: profile.data })
               }
             })
         }
-        setPosts({posts: [...newPosts]})
+        setPosts({ posts: [...newPosts] })
         setIsLoading(false)
       })
     }
@@ -87,27 +82,25 @@ const ProfilePage: React.FC = () => {
 
   return (
     <Page
-      title={userProfile ? (userProfile.current?.name as string) : 'Profile'}
+      title={profile ? (profile?.name as string) : 'Profile'}
       loading={isLoading}
       loadingText="Loading Posts..."
       hideSearch={isMobile}
     >
-      {params.webId === userProfile.current?.id ? null : (
+      {!isLoading && params.webId === session?.info.webId ? null : (
         <div className={styles.header}>
-          <h2>{userProfile ? userProfile.current?.name : 'Loading User...'}</h2>
-          {userProfile.current?.id && (
+          <h2>{profile ? profile?.name : 'Loading User...'}</h2>
+          {profile?.id && (
             <FollowButton webId={new URL(params.webId as string)} />
           )}
         </div>
       )}
       <PostGrid posts={posts.posts} />
-      {session?.info.isLoggedIn &&
-        session.info.webId ===
-          decodeURIComponent(params.webId as string) && (
-          <div className="footer">
-            <UploadButton />
-          </div>
-        )}
+      {session?.info.isLoggedIn && session.info.webId === params.webId && (
+        <div className="footer">
+          <UploadButton />
+        </div>
+      )}
     </Page>
   )
 }

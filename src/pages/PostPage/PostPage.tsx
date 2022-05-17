@@ -30,7 +30,7 @@ const PostPage: React.FC = () => {
   // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
 
   const [userData, setUserData] = useRecoilState(userState)
-  const [post, setPost] = useRecoilState(postState)
+  const [{ post }, setPost] = useRecoilState(postState)
   const { session } = auth
 
   const onClose = () => {
@@ -43,7 +43,7 @@ const PostPage: React.FC = () => {
 
   useClickOutside(selectedImageRef, () => {
     analyticsWindow.fathom?.trackGoal('7RBSJNKX', 0)
-    onClose()
+    if (!isLoading) onClose()
   })
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const PostPage: React.FC = () => {
             (post) => shortenPostId(post.id) === params.post
           )
           if (selected) {
-            setPost({ ...post, current: selected })
+            setPost({ ...post, post: selected })
             solidProfile.fetcher._fetch = session.fetch
             solidProfile
               .findOne({
@@ -64,7 +64,7 @@ const PostPage: React.FC = () => {
               })
               .then((profile) => {
                 if (profile.data) {
-                  setUserData({ ...userData, current: profile.data })
+                  setUserData({ ...userData, profile: profile.data })
                 }
               })
             setIsLoading(false)
@@ -75,16 +75,16 @@ const PostPage: React.FC = () => {
   }, [])
 
   const renderProfileButton = () => {
-    if (userData.current?.id) {
+    if (userData.profile?.id) {
       return (
         <button
           onClick={(e) => {
             e.preventDefault()
-            userData.current?.id &&
-              navigate(`/user/${encodeURIComponent(userData.current.id)}`)
+            userData.profile?.id &&
+              navigate(`/user/${encodeURIComponent(userData.profile.id)}`)
           }}
         >
-          View {userData.current?.name}'s profile
+          View {userData.profile?.name}'s profile
         </button>
       )
     }
@@ -93,26 +93,28 @@ const PostPage: React.FC = () => {
   return (
     <Page title="Post" loading={isLoading} loadingText="Loading...">
       <div className={styles.selectedPostWrapper}>
-        <div className={styles.buttonBar}>
-          {renderProfileButton()}
-          {location.state ? (
-            <button
-              onClick={(e) => {
-                analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
-                e.preventDefault()
-                onClose()
-              }}
-            >
-              Close
-            </button>
-          ) : null}
-        </div>
-        {!post.current && !isLoading && <h1>This post does not exist</h1>}
-        {post.current && (
+        {!isLoading && (
+          <div className={styles.buttonBar}>
+            {renderProfileButton()}
+            {location.state ? (
+              <button
+                onClick={(e) => {
+                  analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
+                  e.preventDefault()
+                  onClose()
+                }}
+              >
+                Close
+              </button>
+            ) : null}
+          </div>
+        )}
+        {!post && !isLoading && <h1>This post does not exist</h1>}
+        {!isLoading && post && (
           <img
             ref={selectedImageRef}
             className={styles.selectedPost}
-            src={post.current.link}
+            src={post.link}
           />
         )}
       </div>

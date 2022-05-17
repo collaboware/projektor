@@ -32,7 +32,7 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      {loading && loadingText && (
+      {(loading || !app.current) && loadingText && (
         <LoadingOverlay active={loading} description={loadingText} />
       )}
       {currentSession && <Header hideSearch={hideSearch} />}
