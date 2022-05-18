@@ -14,7 +14,7 @@ import styles from './FeedPage.module.scss'
 
 export const FeedPage = () => {
   const [auth, _] = useRecoilState(authState)
-  const { feed, isLoading } = useFeed(auth.session)
+  const { feed, nextFeed, isLoading, updateFeed } = useFeed(auth.session)
   const navigate = useNavigate()
   const location = useLocation()
   const urlParams = new URLSearchParams(location.search)
@@ -42,6 +42,18 @@ export const FeedPage = () => {
           Grid
         </label>
       </div>
+      {nextFeed && nextFeed.length > 0 ? (
+        <div className={styles.updateButton}>
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              updateFeed()
+            }}
+          >
+            Show Updates ({nextFeed.length})
+          </button>
+        </div>
+      ) : null}
       {feed && (
         <div className={styles.feed}>
           {!urlParams.get('feed') || urlParams.get('feed') === 'stream' ? (

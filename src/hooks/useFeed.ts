@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { PostShape } from '../generated/shex'
+import { shortenPostId } from '../pages/PostPage/PostPage'
 import { fetchPosts } from '../pages/ProfilePage/ProfilePage'
 import { feedState } from '../state/feed'
 
@@ -11,10 +12,28 @@ import { useFollowingList } from './useFollowingList'
 export const useFeed = (currentSession: Session | null) => {
   const { followingList } = useFollowingList()
   const [isLoading, setIsLoading] = useState(true)
-  const [{ feed }, setFeedState] = useRecoilState(feedState)
+  const [{ feed, nextFeed }, setFeedState] = useRecoilState(feedState)
 
-  const setFeed = (feed: { post: PostShape; user: string }[]) => {
-    setFeedState({ feed })
+  const setNextFeed = (feed: { post: PostShape; user: string }[]) => {
+    setFeedState((state) => {
+      const nextFeed = state.feed
+        ? feed.filter(
+            ({ post }) =>
+              Number(shortenPostId(post.id)) >
+              Number(
+                shortenPostId((state.feed as { post: PostShape }[])[0].post.id)
+              )
+          )
+        : feed
+      return {
+        nextFeed,
+        feed: state.feed ? state.feed : feed,
+      }
+    })
+  }
+
+  const updateFeed = () => {
+    if (nextFeed && feed) setFeedState({ feed: [...nextFeed, ...feed] })
   }
 
   useEffect(() => {
@@ -35,7 +54,7 @@ export const useFeed = (currentSession: Session | null) => {
           )
         })
       ).then((individualPostLists) => {
-        setFeed(
+        setNextFeed(
           individualPostLists
             .reduce((allPosts, postList) => {
               return [...allPosts, ...postList]
@@ -58,8 +77,8 @@ export const useFeed = (currentSession: Session | null) => {
   }, [followingList])
 
   if (feed) {
-    return { isLoading: false, feed }
+    return { isLoading: false, feed, nextFeed, updateFeed }
   }
 
-  return { isLoading, feed }
+  return { isLoading, feed, nextFeed, updateFeed }
 }
