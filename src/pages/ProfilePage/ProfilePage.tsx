@@ -87,16 +87,14 @@ const ProfilePage: React.FC = () => {
       loadingText="Loading Posts..."
       hideSearch={isMobile}
     >
-      {!isLoading && params.webId === session?.info.webId ? null : (
+      {!isLoading && params.webId !== auth.user?.id ? (
         <div className={styles.header}>
           <h2>{profile ? profile?.name : 'Loading User...'}</h2>
-          {profile?.id && (
-            <FollowButton webId={new URL(params.webId as string)} />
-          )}
+          <FollowButton webId={new URL(params.webId as string)} />
         </div>
-      )}
-      <PostGrid posts={posts.posts} />
-      {session?.info.isLoggedIn && session.info.webId === params.webId && (
+      ) : null}
+      {!isLoading && <PostGrid posts={posts.posts} />}
+      {!isLoading && auth.user?.id !== params.webId && (
         <div className="footer">
           <UploadButton />
         </div>
