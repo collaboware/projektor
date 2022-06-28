@@ -19,7 +19,7 @@ function App() {
   // const [currentUser, setCurrentUser] = useState<SolidProfileShape | null>(null)
   const [auth, setAuth] = useRecoilState(authState)
 
-  const {user, session} = auth
+  const { user, session } = auth
 
   const navigate = useNavigate()
 
@@ -35,7 +35,7 @@ function App() {
   //   }
   // }, [currentSession?.info.isLoggedIn])
 
-    useEffect(() => {
+  useEffect(() => {
     if (session?.info.isLoggedIn) {
       const redirect = localStorage.getItem('redirect-before-access')
       if (redirect) {
@@ -53,9 +53,7 @@ function App() {
       async (sessionInfo) => {
         if (sessionInfo?.isLoggedIn) {
           const newSession = getDefaultSession()
-          setAuth({...auth, session: newSession})
-          console.log("auth1", auth);
-          console.log(newSession);
+          setAuth({ ...auth, session: newSession })
           const newUser = await solidProfile.findOne({
             where: { id: sessionInfo.webId as string },
             doc: sessionInfo.webId as string,
@@ -63,17 +61,11 @@ function App() {
           setIsLoggingIn(false)
 
           if (newUser.data) {
-            console.log("new user", newUser);
             setAuth({ user: newUser.data, session: newSession })
-          console.log("auth2", auth);
-          setIsLoggingIn(false)
-          }
-          else {
-            console.log("else");
+            setIsLoggingIn(false)
+          } else {
             setAuth({ ...auth, session: newSession })
             setIsLoggingIn(false)
-
-  
           }
         } else if (sessionInfo) {
           setIsLoggingIn(false)
@@ -82,24 +74,27 @@ function App() {
     )
   }, [])
 
-
   const routing = useRoutes(
     routesConfig(!!session?.info.isLoggedIn, isLoggingIn)
   )
 
   return (
-      <CurrentUserAuthContext.Provider
-        value={{
-          session: session as Session,
-          user: user as SolidProfileShape,
-        }}
-      >
-        {routing}
-      </CurrentUserAuthContext.Provider>
+    <CurrentUserAuthContext.Provider
+      value={{
+        session: session as Session,
+        user: user as SolidProfileShape,
+      }}
+    >
+      {routing}
+    </CurrentUserAuthContext.Provider>
   )
 }
 
 // RecoilRoot must be a parent in order to useRecoilState --> needed for auth
 export default () => {
-  return <RecoilRoot><App/></RecoilRoot>
+  return (
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
+  )
 }

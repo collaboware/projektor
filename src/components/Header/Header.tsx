@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
   const { term } = useParams<{ term: string }>()
   const [searchTerm, setSearchTerm] = useState(term)
   const [auth, _] = useRecoilState(authState)
-  const {user} = auth
+  const { user } = auth
 
   const isMobile = useIsMobile()
   const navigate = useNavigate()
@@ -29,6 +29,7 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
         <input
           autoFocus={isSearching}
           className={styles.search}
+          placeholder="Explore"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setSearchTerm(e.target?.value)
             if (!e.target.value) {

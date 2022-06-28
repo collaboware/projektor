@@ -112,6 +112,8 @@ const PostPage: React.FC = () => {
         {!post && !isLoading && <h1>This post does not exist</h1>}
         {!isLoading && post && (
           <img
+            title={post.link}
+            loading={'lazy'}
             ref={selectedImageRef}
             className={styles.selectedPost}
             src={post.link}

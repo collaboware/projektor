@@ -27,7 +27,6 @@
 
   .post {
     min-width: 100%;
-    min-height: 100%;
   }
 }
 
@@ -40,6 +39,14 @@
   .fullSizeWrapper {
     width: 100vw;
     max-height: 100vw;
+  }
+
+  .gridWrapper {
+    height: calc((100vw - 16px) / 3);
+
+    .post {
+      height: initial;
+    }
   }
 
   .post {
