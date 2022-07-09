@@ -25,6 +25,9 @@ export const useFeed = (currentSession: Session | null) => {
               )
           )
         : feed
+      if (state.feed?.length ?? 0 > feed.length) {
+        return { feed }
+      }
       return {
         nextFeed,
         feed: state.feed ? state.feed : feed,

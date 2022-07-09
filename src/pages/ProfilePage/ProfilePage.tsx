@@ -27,16 +27,28 @@ export const fetchPosts = (session: Session, webId: string) => {
       await postIndex
         .findAll({ doc: publicTypeIndexUrl as string })
         .then(async (posts) => {
-          const fullPosts = (await Promise.all(
-            posts.data?.map(async (postIndex) => {
-              return (
-                await post.findOne({
-                  where: { id: postIndex.link },
-                  doc: new NamedNode(postIndex.link).doc().uri,
-                })
-              ).data
-            }) ?? []
-          )) as PostShape[]
+          const fullPosts = (
+            await Promise.all(
+              posts.data?.map(async (postIndex) => {
+                return (
+                  await post.findOne({
+                    where: { id: postIndex.link },
+                    doc: new NamedNode(postIndex.link).doc().uri,
+                  })
+                ).data
+              }) ?? []
+            )
+          ).sort((postA, postB) => {
+            const postATimeString = postA?.id.substring(
+              postA?.id.lastIndexOf('/') + 1,
+              postA?.id.lastIndexOf('-post')
+            )
+            const postBTimeString = postB?.id.substring(
+              postB?.id.lastIndexOf('/') + 1,
+              postB?.id.lastIndexOf('-post')
+            )
+            return Number(postBTimeString) - Number(postATimeString)
+          }) as PostShape[]
           resolve(fullPosts)
         })
     }

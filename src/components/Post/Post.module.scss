@@ -31,8 +31,8 @@
 }
 
 .fullSize {
-  height: max-content !important;
-  width: 100%;
+  height: initial;
+  max-width: max-content;
 }
 
 @media (max-width: $screen-l) {
@@ -47,6 +47,10 @@
     .post {
       height: initial;
     }
+  }
+
+  .fullSize {
+    height: initial !important;
   }
 
   .post {

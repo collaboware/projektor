@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Fetcher, Store } from 'rdflib'
 import { useRecoilState } from 'recoil'
+import imageCompression from 'browser-image-compression'
+import mime from 'mime'
 
 import {
   post,
@@ -13,6 +15,21 @@ import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 import { authState } from '../../state/auth'
 
 import styles from './UploadButton.module.scss'
+
+export function getQualityLink(link: string, quality: number, type: string) {
+  const extension = mime.extension(type) as string
+  return `${String(link).replace(`.${extension}`, '')}-${quality}.${extension}`
+}
+
+function blobToArrayBuffer(blob: Blob) {
+  return new Promise<string | ArrayBuffer | null | undefined>((resolve) => {
+    const reader = new FileReader()
+    reader.onload = function (e) {
+      resolve(e.target?.result)
+    }
+    reader.readAsArrayBuffer(blob)
+  })
+}
 
 interface UploadButtonProps {
   onUpload?: () => void
@@ -67,12 +84,37 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
                       'profile/card#me',
                       `settings/publicTypeIndex.ttl`
                     )
-                  fetcher
-                    .webOperation('PUT', pictureUrl as string, {
-                      data: data as string,
-                      contentType: contentType,
-                    })
-                    .then(async (res: Response) => {
+                  const imgQualities = ['raw', 2, 4, 8]
+                  const uploads = imgQualities.map(async (quality, index) => {
+                    if (quality === 'raw') {
+                      return fetcher.webOperation('PUT', pictureUrl as string, {
+                        data: data as string,
+                        contentType: contentType,
+                      })
+                    } else {
+                      const img = await imageCompression(file, {
+                        maxSizeMB: 1,
+                        maxWidthOrHeight: 1024,
+                        initialQuality: 1 / Number(quality),
+                        useWebWorker: true,
+                      })
+                      return fetcher.webOperation(
+                        'PUT',
+                        getQualityLink(
+                          pictureUrl as string,
+                          index as number,
+                          img.type
+                        ),
+                        {
+                          data: (await blobToArrayBuffer(img)) as string,
+                          contentType: img.type,
+                        }
+                      )
+                    }
+                  })
+                  Promise.all(uploads)
+                    .then(async (uploads: Response[]) => {
+                      const res = uploads[0]
                       if (res.status >= 201 && res.status < 400) {
                         const { data } = await post.create({
                           doc: postUrl as string,

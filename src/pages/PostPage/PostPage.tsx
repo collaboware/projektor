@@ -50,6 +50,17 @@ const PostPage: React.FC = () => {
   useEffect(() => {
     setIsLoading(true)
     if (session?.info) {
+      solidProfile.fetcher._fetch = session.fetch
+      solidProfile
+        .findOne({
+          where: { id: params.webId },
+          doc: params.webId as string,
+        })
+        .then((profile) => {
+          if (profile.data) {
+            setUserData({ ...userData, profile: profile.data })
+          }
+        })
       fetchPosts(session, params.webId as string)
         .then((posts) => {
           const selected = posts.find(
@@ -57,17 +68,6 @@ const PostPage: React.FC = () => {
           )
           if (selected) {
             setPost({ ...post, post: selected })
-            solidProfile.fetcher._fetch = session.fetch
-            solidProfile
-              .findOne({
-                where: { id: params.webId },
-                doc: params.webId as string,
-              })
-              .then((profile) => {
-                if (profile.data) {
-                  setUserData({ ...userData, profile: profile.data })
-                }
-              })
             setIsLoading(false)
           }
         })
@@ -92,7 +92,11 @@ const PostPage: React.FC = () => {
   }
 
   return (
-    <Page title="Post" loading={isLoading} loadingText="Loading...">
+    <Page
+      title={userData ? `Post by ${userData.profile?.name}` : 'Post'}
+      loading={isLoading}
+      loadingText="Loading..."
+    >
       <div className={styles.selectedPostWrapper}>
         {!isLoading && (
           <div className={styles.buttonBar}>
