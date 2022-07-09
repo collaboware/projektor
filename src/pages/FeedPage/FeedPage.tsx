@@ -21,7 +21,6 @@ export const FeedPage = () => {
 
   return (
     <Page title="Home" loading={isLoading}>
-      {isLoading && <h2>Loading...</h2>}
       <div className={styles.feedSettings}>
         <label>
           <input
@@ -54,6 +53,7 @@ export const FeedPage = () => {
           </button>
         </div>
       ) : null}
+      {isLoading && <h2>Loading...</h2>}
       {feed && (
         <div className={styles.feed}>
           {!urlParams.get('feed') || urlParams.get('feed') === 'stream' ? (
