@@ -94,7 +94,7 @@ const ProfilePage: React.FC = () => {
         </div>
       ) : null}
       {!isLoading && <PostGrid posts={posts.posts} />}
-      {!isLoading && auth.user?.id !== params.webId && (
+      {!isLoading && auth.user?.id === params.webId && (
         <div className="footer">
           <UploadButton />
         </div>

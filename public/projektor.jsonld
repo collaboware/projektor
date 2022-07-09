@@ -3,8 +3,7 @@
   "client_id": "https://projektor.technology/projektor.jsonld",
   "redirect_uris": [
     "https://projektor.technology/login",
-    "https://staging.projektor.technology/login",
-    "http://localhost:3000/login"
+    "https://staging.projektor.technology/login"
   ],
   "client_name": "Projektor Web App",
   "client_uri": "https://projektor.technology/",

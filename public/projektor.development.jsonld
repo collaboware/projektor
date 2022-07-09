@@ -1,0 +1,13 @@
+{
+  "@context": "https://www.w3.org/ns/solid/oidc-context.jsonld",
+  "client_id": "http://localhost:3000/projektor.development.jsonld",
+  "redirect_uris": [
+    "http://localhost:3000/login"
+  ],
+  "client_name": "Projektor Web App",
+  "client_uri": "https://localhost:3000/",
+  "logo_uri": "https://localhost:3000/logo512.png",
+  "contacts": [
+    "ludwigschubi1@gmail.com"
+  ]
+}

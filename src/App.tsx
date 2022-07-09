@@ -49,8 +49,8 @@ function App() {
 
   useEffect(() => {
     setIsLoggingIn(true)
-    handleIncomingRedirect({ restorePreviousSession: true }).then(
-      async (sessionInfo) => {
+    handleIncomingRedirect({ restorePreviousSession: true })
+      .then(async (sessionInfo) => {
         if (sessionInfo?.isLoggedIn) {
           const newSession = getDefaultSession()
           setAuth({ ...auth, session: newSession })
@@ -70,8 +70,8 @@ function App() {
         } else if (sessionInfo) {
           setIsLoggingIn(false)
         }
-      }
-    )
+      })
+      .catch(console.error)
   }, [])
 
   const routing = useRoutes(
