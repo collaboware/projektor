@@ -1,0 +1,15 @@
+{
+  "@context": "https://www.w3.org/ns/solid/oidc-context.jsonld",
+  "client_id": "https://projektor.technology/projektor.jsonld",
+  "redirect_uris": [
+    "https://projektor.technology/login",
+    "https://staging.projektor.technology/login",
+    "http://localhost:3000/login"
+  ],
+  "client_name": "Projektor Web App",
+  "client_uri": "https://projektor.technology/",
+  "logo_uri": "https://projektor.technology/logo512.png",
+  "contacts": [
+    "ludwigschubi1@gmail.com"
+  ]
+}

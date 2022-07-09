@@ -43,6 +43,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                 login({
                   oidcIssuer: 'https://broker.pod.inrupt.com',
                   clientName: 'Projektor Web App',
+                  clientId: 'https://projektor.technology/projektor.jsonld',
                 })
               }}
             >
