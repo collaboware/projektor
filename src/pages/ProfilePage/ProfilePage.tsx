@@ -44,11 +44,32 @@ export const fetchPosts = (session: Session, webId: string) => {
   })
 }
 
+export const deletePost = (session: Session, postToDelete: PostShape) => {
+  return new Promise<void>(async (resolve) => {
+    if (session.info.isLoggedIn) {
+      const publicTypeIndexUrl = session.info.webId?.replace(
+        'profile/card#me',
+        `settings/publicTypeIndex.ttl`
+      )
+      postIndex.fetcher._fetch = session.fetch
+      post.fetcher._fetch = session.fetch
+      await post.fetcher.webOperation('DELETE', postToDelete?.link as string)
+      await post.delete({
+        where: { id: postToDelete?.id as string },
+        doc: postToDelete?.id as string,
+      })
+      await post.fetcher.webOperation('DELETE', postToDelete?.id)
+      await postIndex.delete({
+        where: { id: postToDelete.id as string },
+        doc: publicTypeIndexUrl as string,
+      })
+      resolve()
+    }
+  })
+}
+
 const ProfilePage: React.FC = () => {
-  // const { session: currentSession } = useContext(CurrentUserAuthContext)
-  // const [posts, setPosts] = useState<PostShape[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
   const [auth, _] = useRecoilState(authState)
   const [{ profile }, setUserProfile] = useRecoilState(userState)
   const [posts, setPosts] = useRecoilState(postsState)

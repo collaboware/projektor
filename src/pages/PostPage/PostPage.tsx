@@ -1,15 +1,16 @@
+import { Session } from '@inrupt/solid-client-authn-browser'
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { useRecoilState } from 'recoil'
 
 import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
-import { solidProfile } from '../../generated/shex'
+import { PostShape, solidProfile } from '../../generated/shex'
 import useClickOutside from '../../hooks/useClickOutside'
 import { authState } from '../../state/auth'
 import { postState } from '../../state/post'
 import { userState } from '../../state/user'
-import { fetchPosts } from '../ProfilePage/ProfilePage'
+import { deletePost, fetchPosts } from '../ProfilePage/ProfilePage'
 
 import styles from './PostPage.module.scss'
 
@@ -105,6 +106,20 @@ const PostPage: React.FC = () => {
                 }}
               >
                 Close
+              </button>
+            ) : null}
+            {session?.info.webId === params.webId && userData.profile?.id ? (
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  deletePost(session as Session, post as PostShape)
+                  navigate(
+                    `/user/${encodeURIComponent(String(userData.profile?.id))}`,
+                    { replace: true }
+                  )
+                }}
+              >
+                Delete
               </button>
             ) : null}
           </div>

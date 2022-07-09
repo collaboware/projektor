@@ -45,7 +45,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                   clientName: 'Projektor Web App',
                   clientId:
                     process.env.NODE_ENV === 'development'
-                      ? 'http://localhost:3000/projektor.development.jsonld'
+                      ? undefined
                       : 'https://projektor.technology/projektor.jsonld',
                 })
               }}
