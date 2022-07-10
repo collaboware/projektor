@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
         <input
           autoFocus={isSearching}
           className={styles.search}
-          placeholder="Explore"
+          placeholder="Search and maybe find"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setSearchTerm(e.target?.value)
             if (!e.target.value) {
