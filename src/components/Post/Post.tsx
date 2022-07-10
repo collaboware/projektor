@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
 import classNames from 'classnames'
 import mime from 'mime'
+import React, { useState } from 'react'
 
+import screenSizes from '../../constants.scss'
 import { PostShape } from '../../generated/shex'
 import { getQualityLink } from '../UploadButton/UploadButton'
-import screenSizes from '../../constants.scss'
 
 import styles from './Post.module.scss'
 
@@ -15,9 +15,27 @@ interface PostProps {
   onSelect?: () => void
 }
 
+export const encodePostId = (postId: string) => {
+  const b64PostId = btoa(postId)
+  return b64PostId.substring(
+    0,
+    ((b64PostId.length - (b64PostId.length % 3)) / 3) * 3
+  )
+}
+
+const isDefinitelyRawUpload = (post: string) => {
+  const whenCompressionWasAdded = new Date('2022-07-9')
+  const postUrlPath = new URL(post).pathname
+  const postId = postUrlPath.substring(
+    postUrlPath.lastIndexOf('/') + 1,
+    postUrlPath.length
+  )
+  return Number(postId) < whenCompressionWasAdded.getTime()
+}
+
 const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
+  const [loadRaw, setLoadRaw] = useState(isDefinitelyRawUpload(post.id))
   const type = mime.lookup(post.link)
-  const [loadRaw, setLoadRaw] = useState(false)
   const imageComponent = (
     <img
       onError={() => {
@@ -40,6 +58,7 @@ const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
   )
   return (
     <div
+      id={encodePostId(post.id)}
       className={classNames(styles.wrapper, {
         [styles.fullSizeWrapper]: fullSize,
         [styles.gridWrapper]: grid,

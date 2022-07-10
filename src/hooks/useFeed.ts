@@ -68,8 +68,8 @@ export const useFeed = (currentSession: Session | null) => {
   const refetchFeed = async () => {
     setIsLoading(true)
     if (followingList && currentSession) {
-      loadFeed(followingList, currentSession).then((feed) => {
-        setFeedState({ feed, nextFeed: feed })
+      await loadFeed(followingList, currentSession).then((feed) => {
+        setFeedState({ feed, nextFeed: [] })
         setIsLoading(false)
       })
     }

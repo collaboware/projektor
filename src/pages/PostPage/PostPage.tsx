@@ -5,10 +5,12 @@ import { useRecoilState } from 'recoil'
 
 import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
+import { encodePostId } from '../../components/Post/Post'
 import { PostShape, solidProfile } from '../../generated/shex'
 import useClickOutside from '../../hooks/useClickOutside'
 import { authState } from '../../state/auth'
 import { postState } from '../../state/post'
+import { postsState } from '../../state/posts'
 import { userState } from '../../state/user'
 import { deletePost, fetchPosts } from '../ProfilePage/ProfilePage'
 
@@ -32,14 +34,14 @@ const PostPage: React.FC = () => {
 
   const [userData, setUserData] = useRecoilState(userState)
   const [{ post }, setPost] = useRecoilState(postState)
+  const [_posts, setPosts] = useRecoilState(postsState)
   const { session } = auth
 
   const onClose = () => {
-    const parentRoute = location.pathname.substring(
-      0,
-      location.pathname.lastIndexOf('/')
-    )
-    navigate((location.state as string) ?? parentRoute)
+    const parentRoute =
+      location.state ??
+      location.pathname.substring(0, location.pathname.lastIndexOf('/'))
+    navigate(parentRoute + `#${encodePostId(post?.id as string)}`)
   }
 
   useClickOutside(selectedImageRef, () => {
@@ -114,13 +116,28 @@ const PostPage: React.FC = () => {
             ) : null}
             {session?.info.webId === params.webId && userData.profile?.id ? (
               <button
+                className="danger"
                 onClick={(e) => {
                   e.preventDefault()
-                  deletePost(session as Session, post as PostShape)
-                  navigate(
-                    `/user/${encodeURIComponent(String(userData.profile?.id))}`,
-                    { replace: true }
-                  )
+                  if (confirm('Do you really want to delete this post?')) {
+                    deletePost(session as Session, post as PostShape).then(
+                      () => {
+                        setPosts((state) => ({
+                          posts: [
+                            ...state.posts.filter(
+                              (oldPost) => oldPost.id !== post?.id
+                            ),
+                          ],
+                        }))
+                        navigate(
+                          `/user/${encodeURIComponent(
+                            String(userData.profile?.id)
+                          )}`,
+                          { replace: true }
+                        )
+                      }
+                    )
+                  }
                 }}
               >
                 Delete

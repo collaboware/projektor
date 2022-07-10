@@ -5,3 +5,21 @@
   margin: initial;
   padding: 16px 0;
 }
+
+.footer {
+  padding-top: 16px;
+  position: sticky;
+  bottom: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  button {
+    width: 200px;
+  }
+
+  button + button {
+    margin-top: 16px;
+  }
+}

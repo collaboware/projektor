@@ -1,7 +1,7 @@
-import { Session } from '@inrupt/solid-client-authn-browser'
+import { getDefaultSession, Session } from '@inrupt/solid-client-authn-browser'
 import { NamedNode } from 'rdflib'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { useRecoilState } from 'recoil'
 
 import FollowButton from '../../components/FollowButton/FollowButton'
@@ -9,6 +9,7 @@ import Page from '../../components/Page/Page'
 import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton from '../../components/UploadButton/UploadButton'
 import { post, postIndex, PostShape, solidProfile } from '../../generated/shex'
+import { useFollowingList } from '../../hooks/useFollowingList'
 import { useIsMobile } from '../../hooks/useIsMobile'
 import { authState } from '../../state/auth'
 import { postsState } from '../../state/posts'
@@ -82,10 +83,12 @@ export const deletePost = (session: Session, postToDelete: PostShape) => {
 
 const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [auth, _] = useRecoilState(authState)
+  const { isLoading: isLoadingFollowingList } = useFollowingList()
+  const [auth, setAuthState] = useRecoilState(authState)
   const [{ profile }, setUserProfile] = useRecoilState(userState)
   const [posts, setPosts] = useRecoilState(postsState)
   const params = useParams<{ webId: string }>()
+  const navigate = useNavigate()
   const isMobile = useIsMobile()
   const { session } = auth
 
@@ -116,7 +119,7 @@ const ProfilePage: React.FC = () => {
   return (
     <Page
       title={profile ? (profile?.name as string) : 'Profile'}
-      loading={isLoading}
+      loading={isLoading || isLoadingFollowingList}
       loadingText="Loading Posts..."
       hideSearch={isMobile}
     >
@@ -128,8 +131,30 @@ const ProfilePage: React.FC = () => {
       ) : null}
       {!isLoading && <PostGrid posts={posts.posts} />}
       {!isLoading && auth.user?.id === params.webId && (
-        <div className="footer">
-          <UploadButton />
+        <div className={styles.footer}>
+          <UploadButton
+            onUpload={() => {
+              setIsLoading(true)
+              fetchPosts(auth.session as Session, params.webId as string).then(
+                (newPosts) => {
+                  setPosts({ posts: [...newPosts] })
+                  setIsLoading(false)
+                }
+              )
+            }}
+          />
+          <button
+            className="danger"
+            onClick={() => {
+              const currentSession = getDefaultSession()
+              currentSession.logout().then(() => {
+                setAuthState({ session: null, user: null })
+                navigate('/login')
+              })
+            }}
+          >
+            Logout
+          </button>
         </div>
       )}
     </Page>
