@@ -46,24 +46,41 @@ export const useFeed = (currentSession: Session | null) => {
 
   const setNextFeed = (feed: { post: PostShape; user: string }[]) => {
     setFeedState((state) => {
-      const nextFeed =
-        state.feed && state.feed.length
-          ? feed.filter(
-              ({ post }) =>
-                Number(shortenPostId(post.id)) >
-                Number(
-                  shortenPostId(
-                    (state.feed as { post: PostShape }[])[0].post.id
-                  )
-                )
-            )
-          : feed
       if (state.feed?.length && (state.feed?.length ?? 0) > feed.length) {
         return { feed }
       }
+      const lastUsableFeed = state.feed?.filter(
+        ({ user }) =>
+          followingList?.following?.includes(user) ||
+          user === currentSession?.info.webId
+      )
+      const nextFeed = lastUsableFeed?.length
+        ? feed.filter(
+            ({ post }) =>
+              Number(shortenPostId(post.id)) >
+              Number(
+                shortenPostId(
+                  (lastUsableFeed as { post: PostShape }[])[0].post.id
+                )
+              )
+          )
+        : []
+      const lastFeed = lastUsableFeed?.length
+        ? feed.filter(
+            ({ post }) =>
+              Number(shortenPostId(post.id)) <=
+              Number(
+                shortenPostId(
+                  (lastUsableFeed as { post: PostShape }[])[0].post.id
+                )
+              )
+          )
+        : feed
+
+      console.debug(nextFeed, lastFeed, lastUsableFeed)
       return {
         nextFeed,
-        feed: state.feed ?? feed,
+        feed: lastUsableFeed?.length ? lastFeed : feed,
       }
     })
   }
