@@ -88,7 +88,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                   if (confirm(`Do you really want to login to ${idp}?`)) {
                     setIsLoggingIn(true)
                     login({
-                      oidcIssuer: idp,
+                      oidcIssuer: !idp.startsWith('https://')
+                        ? `https://${idp}`
+                        : idp,
                       clientName: 'Projektor Web App',
                       clientId:
                         process.env.NODE_ENV === 'development'
@@ -98,10 +100,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                   }
                 }}
               >
-                <input
-                  name="idp"
-                  placeholder="Custom identity provider url"
-                ></input>
+                <input name="idp" placeholder="Custom identity provider url" />
                 <button type="submit">Login</button>
               </form>
             </div>

@@ -46,16 +46,19 @@ export const useFeed = (currentSession: Session | null) => {
 
   const setNextFeed = (feed: { post: PostShape; user: string }[]) => {
     setFeedState((state) => {
-      const nextFeed = state.feed
-        ? feed.filter(
-            ({ post }) =>
-              Number(shortenPostId(post.id)) >
-              Number(
-                shortenPostId((state.feed as { post: PostShape }[])[0].post.id)
-              )
-          )
-        : feed
-      if (state.feed?.length ?? 0 > feed.length) {
+      const nextFeed =
+        state.feed && state.feed.length
+          ? feed.filter(
+              ({ post }) =>
+                Number(shortenPostId(post.id)) >
+                Number(
+                  shortenPostId(
+                    (state.feed as { post: PostShape }[])[0].post.id
+                  )
+                )
+            )
+          : feed
+      if (state.feed?.length && (state.feed?.length ?? 0) > feed.length) {
         return { feed }
       }
       return {
@@ -80,16 +83,14 @@ export const useFeed = (currentSession: Session | null) => {
   }
 
   useEffect(() => {
-    console.debug(followingList)
     if (currentSession && followingList) {
       setIsLoading(true)
-      console.debug('Refetching feed because following list changed')
       loadFeed(followingList, currentSession).then((feed) => {
         setNextFeed(feed)
         setIsLoading(false)
       })
     }
-  }, [followingList])
+  }, [followingList?.following])
 
   if (feed) {
     return { isLoading: false, feed, nextFeed, updateFeed, refetchFeed }

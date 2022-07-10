@@ -6,7 +6,10 @@ import Page from '../../components/Page/Page'
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import { solidProfile, SolidProfileShape } from '../../generated/shex'
 
-import { IdentityProviderUrls } from './identityProviders'
+import {
+  IdentityProviderUrls,
+  IdentityProviderUrlsWithSubdomainScheme,
+} from './identityProviders'
 import styles from './SearchPage.module.scss'
 
 const SearchPage: React.FC = () => {
@@ -29,7 +32,25 @@ const SearchPage: React.FC = () => {
     const newMatches: { user: SolidProfileShape; provider: string }[] = []
     let possibleUserWebId: string
     if (term?.startsWith('https://')) {
-      possibleUserWebId = term
+      setCurrentSearch(
+        setTimeout(() => {
+          solidProfile
+            .findOne({
+              where: { id: possibleUserWebId },
+              doc: possibleUserWebId,
+            })
+            .then((profile) => {
+              if (profile.data) {
+                setFoundMatches([
+                  {
+                    user: profile.data,
+                    provider: new URL(possibleUserWebId).host,
+                  },
+                ])
+              }
+            })
+        }, 1000)
+      )
     }
     if (currentSession) {
       solidProfile.fetcher._fetch = currentSession?.fetch
@@ -38,31 +59,42 @@ const SearchPage: React.FC = () => {
       }
       setCurrentSearch(
         setTimeout(() => {
-          Promise.all(
-            Object.values(IdentityProviderUrls).map((idp) => {
-              if (!term?.startsWith('https://')) {
-                possibleUserWebId = `https://${idp}/${term}/profile/card#me`
+          const possibleUserWebIds = [
+            ...Object.values(IdentityProviderUrls).map((idp) => {
+              return `https://${idp}/${term}/profile/card#me`
+            }),
+            ...Object.values(IdentityProviderUrlsWithSubdomainScheme).map(
+              (idp) => {
+                return `https://${term}.${idp}/profile/card#me`
               }
+            ),
+          ]
+          Promise.all(
+            possibleUserWebIds.map((possibleUserWebId) => {
               return solidProfile
                 .findOne({
                   where: { id: possibleUserWebId },
                   doc: possibleUserWebId,
                 })
                 .then((profile) => {
+                  console.debug(profile)
                   if (profile.data) {
-                    newMatches.push({ user: profile.data, provider: idp })
+                    newMatches.push({
+                      user: profile.data,
+                      provider: new URL(possibleUserWebId).host,
+                    })
                   }
                 })
+                .catch(console.warn)
             })
-          )
-            .then(() => {
-              setIsLoading(false)
+          ).then(() => {
+            if (newMatches.length) {
               setFoundMatches(newMatches)
-            })
-            .catch(() => {
-              setIsLoading(false)
-              setFoundMatches('Not found.')
-            })
+            } else {
+              setFoundMatches(`No results for ${term}.`)
+            }
+            setIsLoading(false)
+          })
         }, 1000)
       )
     }
