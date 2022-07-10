@@ -41,12 +41,14 @@ export const useFollowingList = () => {
       followingIndex
         .findAll({ doc: publicTypeIndexUrl as string })
         .then((result) => {
+          console.debug(result)
           if (
             !result.data ||
             result.data.length === 0 ||
             !result.data.find((index) => index.id === followingUrl)
           ) {
             setCreateNewIndex(true)
+            setFollowingList([] as unknown as FollowingShape)
             setIsLoading(false)
           } else {
             following

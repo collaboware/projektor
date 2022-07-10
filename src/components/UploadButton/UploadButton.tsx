@@ -13,6 +13,7 @@ import {
 import { analyticsWindow } from '../../AnalyticsWindow'
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 import { authState } from '../../state/auth'
+import { useFeed } from '../../hooks/useFeed'
 
 import styles from './UploadButton.module.scss'
 
@@ -37,6 +38,7 @@ interface UploadButtonProps {
 
 const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
   const [auth, _] = useRecoilState(authState)
+  const { refetchFeed } = useFeed(auth.session)
   const currentSession = auth.session
   const [isUploading, setIsUploading] = useState(false)
   return (
@@ -85,34 +87,40 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
                       `settings/publicTypeIndex.ttl`
                     )
                   const imgQualities = ['raw', 2, 4, 8]
-                  const uploads = imgQualities.map(async (quality, index) => {
-                    if (quality === 'raw') {
-                      return fetcher.webOperation('PUT', pictureUrl as string, {
-                        data: data as string,
-                        contentType: contentType,
-                      })
-                    } else {
-                      const img = await imageCompression(file, {
-                        maxSizeMB: 1,
-                        maxWidthOrHeight: 1024,
-                        initialQuality: 1 / Number(quality),
-                        useWebWorker: true,
-                      })
-                      return fetcher.webOperation(
-                        'PUT',
-                        getQualityLink(
+                  const thumbnails = imgQualities.map(
+                    async (quality, index) => {
+                      if (quality === 'raw') {
+                        return fetcher.webOperation(
+                          'PUT',
                           pictureUrl as string,
-                          index as number,
-                          img.type
-                        ),
-                        {
-                          data: (await blobToArrayBuffer(img)) as string,
-                          contentType: img.type,
-                        }
-                      )
+                          {
+                            data: data as string,
+                            contentType: contentType,
+                          }
+                        )
+                      } else {
+                        const img = await imageCompression(file, {
+                          maxSizeMB: 1,
+                          maxWidthOrHeight: 1024,
+                          initialQuality: 1 / Number(quality),
+                          useWebWorker: true,
+                        })
+                        return fetcher.webOperation(
+                          'PUT',
+                          getQualityLink(
+                            pictureUrl as string,
+                            index as number,
+                            img.type
+                          ),
+                          {
+                            data: (await blobToArrayBuffer(img)) as string,
+                            contentType: img.type,
+                          }
+                        )
+                      }
                     }
-                  })
-                  Promise.all(uploads)
+                  )
+                  Promise.all(thumbnails)
                     .then(async (uploads: Response[]) => {
                       const res = uploads[0]
                       if (res.status >= 201 && res.status < 400) {
@@ -136,6 +144,7 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
                             })
                             .then(() => {
                               setIsUploading(false)
+                              refetchFeed()
                               analyticsWindow.fathom?.trackGoal('7VL5QY9P', 0)
                               if (onUpload) onUpload()
                             })
