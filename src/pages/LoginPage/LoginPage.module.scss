@@ -7,6 +7,21 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  p {
+    max-width: 70ch;
+    padding: 0 16px;
+  }
+
+  a {
+    margin-top: 16px;
+  }
+}
+
+.advanced {
+  button {
+    margin-left: 8px;
+  }
 }
 
 .loginButtons {
