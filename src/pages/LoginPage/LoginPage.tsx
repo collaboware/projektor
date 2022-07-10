@@ -36,8 +36,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
           <p>
             This is a prototype, developed to share photos to a decentralized
             network. The prototype protects the privacy of publishers by giving
-            them full control over the data infrastructure behind Projektor. Use
-            at your own risk and enjoy.
+            them full control over the data infrastructure behind their account.
+            Use at your own risk and enjoy.
           </p>
           {location.hash !== '#advanced' && (
             <div className={styles.loginButtons}>
