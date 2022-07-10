@@ -1,3 +1,5 @@
+@import './styles/constants.scss';
+
 html,
 body,
 #root {
@@ -24,4 +26,14 @@ body,
 
 button.danger {
   color: red;
+}
+
+@media (max-width: $screen-l) {
+  html {
+    zoom: 120%;
+  }
+
+  button {
+    transform: scale(2);
+  }
 }
