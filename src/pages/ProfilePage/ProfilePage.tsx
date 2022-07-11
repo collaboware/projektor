@@ -6,8 +6,11 @@ import { useRecoilState } from 'recoil'
 
 import FollowButton from '../../components/FollowButton/FollowButton'
 import Page from '../../components/Page/Page'
+import { getPostLink } from '../../components/Post/Post'
 import PostGrid from '../../components/PostGrid/PostGrid'
-import UploadButton from '../../components/UploadButton/UploadButton'
+import UploadButton, {
+  ImageQualities,
+} from '../../components/UploadButton/UploadButton'
 import { post, postIndex, PostShape, solidProfile } from '../../generated/shex'
 import { useFollowingList } from '../../hooks/useFollowingList'
 import { useIsMobile } from '../../hooks/useIsMobile'
@@ -66,7 +69,21 @@ export const deletePost = (session: Session, postToDelete: PostShape) => {
       )
       postIndex.fetcher._fetch = session.fetch
       post.fetcher._fetch = session.fetch
-      await post.fetcher.webOperation('DELETE', postToDelete?.link as string)
+      await Promise.all(
+        ImageQualities.map(async (quality) => {
+          if (quality === 'raw') {
+            await post.fetcher.webOperation(
+              'DELETE',
+              postToDelete?.link as string
+            )
+          } else {
+            await post.fetcher.webOperation(
+              'DELETE',
+              getPostLink(postToDelete?.link as string, quality as number)
+            )
+          }
+        })
+      )
       await post.delete({
         where: { id: postToDelete?.id as string },
         doc: postToDelete?.id as string,

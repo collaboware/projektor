@@ -1,3 +1,27 @@
+@import '../../styles/constants.scss';
+
+.uploadButtons {
+  width: 200px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  button {
+    width: initial;
+    flex: 1;
+  }
+}
+
+.uploadButtonsOpen {
+  width: 200px;
+}
+
 .uploadButton {
   width: 200px;
+}
+
+@media (max-width: $screen-l) {
+  .uploadButtons {
+    gap: 36px;
+  }
 }

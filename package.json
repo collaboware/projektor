@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@collaboware/react-scripts": "5.0.3",
+    "@inrupt/solid-client": "^1.23.1",
     "@inrupt/solid-client-authn-browser": "^1.11.7",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
@@ -16,6 +17,7 @@
     "@types/react-helmet": "^6.1.5",
     "browser-image-compression": "^2.0.0",
     "classnames": "^2.3.1",
+    "gifshot": "^0.4.5",
     "rdflib": "2.2.12",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

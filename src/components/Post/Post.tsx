@@ -4,7 +4,10 @@ import React, { useState } from 'react'
 
 import screenSizes from '../../constants.scss'
 import { PostShape } from '../../generated/shex'
-import { getQualityLink } from '../UploadButton/UploadButton'
+import {
+  getQualityLink,
+  getVideoThumbnailLink,
+} from '../UploadButton/UploadButton'
 
 import styles from './Post.module.scss'
 
@@ -26,21 +29,26 @@ export const encodePostId = (postId: string) => {
 const isDefinitelyRawUpload = (post: string) => {
   const whenCompressionWasAdded = new Date('2022-07-9')
   const postUrlPath = new URL(post).pathname
-  const postId = postUrlPath.substring(
-    postUrlPath.lastIndexOf('/') + 1,
-    postUrlPath.length
-  )
+  const postId = postUrlPath
+    .substring(postUrlPath.lastIndexOf('/') + 1, postUrlPath.length)
+    .replace('-post', '')
   return Number(postId) < whenCompressionWasAdded.getTime()
+}
+
+export const getPostLink = (link: string, quality: number) => {
+  const type = mime.lookup(link)
+  if (type.startsWith('video')) {
+    return getVideoThumbnailLink(link, quality)
+  } else {
+    return getQualityLink(link, quality)
+  }
 }
 
 const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
   const [loadRaw, setLoadRaw] = useState(isDefinitelyRawUpload(post.id))
-  const type = mime.lookup(post.link)
   const imageComponent = (
     <img
-      onError={() => {
-        setLoadRaw(true)
-      }}
+      onError={() => setLoadRaw(true)}
       key={post.id}
       title={post.link}
       onClick={() => {
@@ -69,15 +77,21 @@ const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
         <picture>
           <source
             onError={console.error}
-            srcSet={getQualityLink(post.link, 3, type)}
+            srcSet={
+              grid ? getPostLink(post.link, 8) : getQualityLink(post.link, 8)
+            }
             media={`(max-width: ${screenSizes.s}px)`}
           />
           <source
-            srcSet={getQualityLink(post.link, 2, type)}
-            media={`(min-width: ${screenSizes.s}px)`}
+            srcSet={
+              grid ? getPostLink(post.link, 4) : getQualityLink(post.link, 4)
+            }
+            media={`(max-width: ${screenSizes.m}px)`}
           />
           <source
-            srcSet={getQualityLink(post.link, 1, type)}
+            srcSet={
+              grid ? getPostLink(post.link, 2) : getQualityLink(post.link, 2)
+            }
             media={`(min-width: ${screenSizes.l}px)`}
           />
           {imageComponent}

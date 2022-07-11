@@ -1,7 +1,7 @@
 import { RefObject, useEffect } from 'react'
 
 const useClickOutside = (
-  ref: RefObject<HTMLDivElement>,
+  ref: RefObject<HTMLImageElement | HTMLVideoElement>,
   callback: () => void
 ) => {
   const handleClick = (e: MouseEvent) => {

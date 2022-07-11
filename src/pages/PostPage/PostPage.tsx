@@ -1,5 +1,6 @@
 import { Session } from '@inrupt/solid-client-authn-browser'
-import React, { useEffect, useRef, useState } from 'react'
+import mime from 'mime'
+import React, { RefObject, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { useRecoilState } from 'recoil'
 
@@ -24,7 +25,7 @@ const PostPage: React.FC = () => {
   const [auth, _] = useRecoilState(authState)
   // const { session: currentSession } = useContext(CurrentUserAuthContext)
   const params = useParams<{ webId: string; post: string }>()
-  const selectedImageRef = useRef<HTMLImageElement>(null)
+  const selectedPostRef = useRef<HTMLImageElement | HTMLVideoElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -44,7 +45,7 @@ const PostPage: React.FC = () => {
     navigate(parentRoute + `#${encodePostId(post?.id as string)}`)
   }
 
-  useClickOutside(selectedImageRef, () => {
+  useClickOutside(selectedPostRef, () => {
     analyticsWindow.fathom?.trackGoal('7RBSJNKX', 0)
     if (!isLoading) onClose()
   })
@@ -146,14 +147,27 @@ const PostPage: React.FC = () => {
           </div>
         )}
         {!post && !isLoading && <h1>This post does not exist</h1>}
-        {!isLoading && post && (
+        {!isLoading && post && mime.lookup(post.link).startsWith('image') && (
           <img
             title={post.link}
             loading={'lazy'}
-            ref={selectedImageRef}
+            ref={selectedPostRef as RefObject<HTMLImageElement>}
             className={styles.selectedPost}
             src={post.link}
           />
+        )}
+        {!isLoading && post && mime.lookup(post.link).startsWith('video') && (
+          <video
+            controls
+            crossOrigin="use-credentials"
+            preload="metadata"
+            width={document.body.clientWidth}
+            ref={selectedPostRef as RefObject<HTMLVideoElement>}
+            className={styles.selectedPost}
+          >
+            <source src={post.link} type={mime.lookup(post.link)} />
+            Sorry, your browser doesn't support embedded videos.
+          </video>
         )}
       </div>
     </Page>
