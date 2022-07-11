@@ -1,4 +1,5 @@
 import { getDefaultSession, Session } from '@inrupt/solid-client-authn-browser'
+import mime from 'mime'
 import { NamedNode } from 'rdflib'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
@@ -9,6 +10,7 @@ import Page from '../../components/Page/Page'
 import { getPostLink } from '../../components/Post/Post'
 import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton, {
+  getQualityLink,
   ImageQualities,
 } from '../../components/UploadButton/UploadButton'
 import { post, postIndex, PostShape, solidProfile } from '../../generated/shex'
@@ -77,6 +79,12 @@ export const deletePost = (session: Session, postToDelete: PostShape) => {
               postToDelete?.link as string
             )
           } else {
+            if (mime.lookup(postToDelete.link).startsWith('video')) {
+              await post.fetcher.webOperation(
+                'DELETE',
+                getQualityLink(postToDelete.link, quality as number)
+              )
+            }
             await post.fetcher.webOperation(
               'DELETE',
               getPostLink(postToDelete?.link as string, quality as number)

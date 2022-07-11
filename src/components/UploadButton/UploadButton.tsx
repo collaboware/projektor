@@ -30,17 +30,11 @@ import styles from './UploadButton.module.scss'
 export function getQualityLink(link: string, quality: number) {
   const type = mime.lookup(link)
   const extension = mime.extension(type) as string
-  return `${String(link)
-    .replace(`.${extension}`, '')
-    .replace('.jpg', '')}-${quality}.${extension}`
+  return `${link.substring(0, link.lastIndexOf('.'))}-${quality}.${extension}`
 }
 
 export function getVideoThumbnailLink(link: string, quality: number) {
-  const mimeType = mime.lookup(link)
-  const extension = mime.extension(mimeType)
-  return `${String(link)
-    .replace(`.${extension}`, '')
-    .replace('.jpg', '')}-${quality}.gif`
+  return `${link}-${quality}.gif`
 }
 
 interface UploadButtonProps {
