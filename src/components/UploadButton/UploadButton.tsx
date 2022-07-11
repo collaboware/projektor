@@ -214,7 +214,7 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
         {!isUploading && location.hash !== '#upload' && (
           <button
             onClick={() => {
-              navigate('#upload')
+              navigate(`${location.search}#upload`)
             }}
           >
             Upload
