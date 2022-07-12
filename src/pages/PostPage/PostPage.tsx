@@ -160,13 +160,14 @@ const PostPage: React.FC = () => {
           <video
             controls
             crossOrigin="use-credentials"
-            preload="metadata"
+            preload="auto"
             width={document.body.clientWidth}
             ref={selectedPostRef as RefObject<HTMLVideoElement>}
             className={styles.selectedPost}
           >
-            <source src={post.link} type={mime.lookup(post.link)} />
-            Sorry, your browser doesn't support embedded videos.
+            <source src={post.link} type="video/quicktime" />
+            Sorry, your browser doesn't support embedded videos. 
+            Here's a link to the video instead: {post.link}
           </video>
         )}
       </div>

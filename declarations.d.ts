@@ -1,3 +1,3 @@
 declare module '*.module.css'
 declare module '*.module.scss'
-declare module 'gifshot'
+declare module '@collaboware/gifshot'

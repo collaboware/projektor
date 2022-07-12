@@ -20,10 +20,7 @@ interface PostProps {
 
 export const encodePostId = (postId: string) => {
   const b64PostId = btoa(postId)
-  return b64PostId.substring(
-    0,
-    ((b64PostId.length - (b64PostId.length % 3)) / 3) * 3
-  )
+  return b64PostId.replaceAll("=","")
 }
 
 const isDefinitelyRawUpload = (post: string) => {
