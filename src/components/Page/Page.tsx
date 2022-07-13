@@ -1,8 +1,7 @@
-import React, { PropsWithChildren, useContext, useEffect, useRef } from 'react'
+import React, { PropsWithChildren, useEffect, useRef } from 'react'
 import Helmet from 'react-helmet'
 import { useLocation } from 'react-router'
 
-import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
 import Header from '../Header/Header'
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 
@@ -11,6 +10,7 @@ interface PageProps {
   loading?: boolean
   loadingText?: string
   hideSearch?: boolean
+  hideHeader?: boolean
 }
 
 const Page: React.FC<PropsWithChildren<PageProps>> = ({
@@ -19,8 +19,8 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
   loading,
   loadingText,
   hideSearch,
+  hideHeader,
 }) => {
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
   const app = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
@@ -41,7 +41,7 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
       {(loading || !app.current) && loadingText && (
         <LoadingOverlay active={loading} description={loadingText} />
       )}
-      {currentSession && <Header hideSearch={hideSearch} />}
+      {!hideHeader && <Header hideSearch={hideSearch} />}
       {children}
     </div>
   )

@@ -54,28 +54,28 @@ const PostPage: React.FC = () => {
     setIsLoading(true)
     if (session?.info) {
       solidProfile.fetcher._fetch = session.fetch
-      solidProfile
-        .findOne({
-          where: { id: params.webId },
-          doc: params.webId as string,
-        })
-        .then((profile) => {
-          if (profile.data) {
-            setUserData({ ...userData, profile: profile.data })
-          }
-        })
-      fetchPosts(session, params.webId as string)
-        .then((posts) => {
-          const selected = posts.find(
-            (post) => shortenPostId(post.id) === params.post
-          )
-          if (selected) {
-            setPost({ ...post, post: selected })
-            setIsLoading(false)
-          }
-        })
-        .catch(() => setIsLoading(false))
     }
+    solidProfile
+      .findOne({
+        where: { id: params.webId },
+        doc: params.webId as string,
+      })
+      .then((profile) => {
+        if (profile.data) {
+          setUserData({ ...userData, profile: profile.data })
+        }
+      })
+    fetchPosts(session, params.webId as string)
+      .then((posts) => {
+        const selected = posts.find(
+          (post) => shortenPostId(post.id) === params.post
+        )
+        if (selected) {
+          setPost({ ...post, post: selected })
+          setIsLoading(false)
+        }
+      })
+      .catch(() => setIsLoading(false))
   }, [])
 
   const renderProfileButton = () => {
@@ -166,8 +166,8 @@ const PostPage: React.FC = () => {
             className={styles.selectedPost}
           >
             <source src={post.link} type="video/quicktime" />
-            Sorry, your browser doesn't support embedded videos. 
-            Here's a link to the video instead: {post.link}
+            Sorry, your browser doesn't support embedded videos. Here's a link
+            to the video instead: {post.link}
           </video>
         )}
       </div>

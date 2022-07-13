@@ -57,7 +57,7 @@ const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
       className={classNames(styles.post, {
         [styles.fullSize]: fullSize,
       })}
-      src={getPostLink(post.link, 2)}
+      src={post.link}
       loading={'lazy'}
       style={{
         cursor: 'pointer',

@@ -75,6 +75,11 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
             {user?.name}
           </Link>
         )}
+        {!user && (
+          <Link className={styles.user} to={`/login`}>
+            Login
+          </Link>
+        )}
       </div>
       {isMobile && input}
     </>
