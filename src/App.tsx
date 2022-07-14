@@ -56,6 +56,8 @@ function App() {
             setAuth({ ...auth, session: newSession })
             setIsLoggingIn(false)
           }
+        } else {
+          setIsLoggingIn(false)
         }
       })
       .catch(console.error)
