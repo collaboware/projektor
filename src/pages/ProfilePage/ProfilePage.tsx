@@ -1,4 +1,5 @@
 import { getDefaultSession, Session } from '@inrupt/solid-client-authn-browser'
+import classNames from 'classnames'
 import mime from 'mime'
 import { NamedNode } from 'rdflib'
 import React, { useEffect, useState } from 'react'
@@ -158,7 +159,20 @@ const ProfilePage: React.FC = () => {
         posts.posts.length > 0 &&
         params.webId &&
         posts.posts[0].id.includes(new URL(params.webId).host) && (
-          <PostGrid posts={posts.posts} />
+          <PostGrid
+            posts={[
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+              ...posts.posts,
+            ]}
+          />
         )}
       {!isLoading && auth.user?.id === params.webId && (
         <div className={styles.footer}>
@@ -173,7 +187,7 @@ const ProfilePage: React.FC = () => {
               )
             }}
           />
-          {!isLoading && isMobile && profile?.name && (
+          {!isLoading && profile?.name && (
             <ShareButton
               title={'Projektor'}
               text={profile.name}
@@ -181,7 +195,7 @@ const ProfilePage: React.FC = () => {
             />
           )}
           <button
-            className="danger"
+            className={classNames('danger', styles.danger)}
             onClick={() => {
               const currentSession = getDefaultSession()
               currentSession.logout().then(() => {

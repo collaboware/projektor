@@ -1,5 +1,14 @@
 @import './styles/constants.scss';
 
+#root,
+.app,
+button,
+input {
+  background-color: #f4f4f4;
+  color: #333;
+  border-radius: 4px;
+}
+
 html,
 body,
 #root {
@@ -35,12 +44,14 @@ button.danger {
 
   button {
     transform: scale(1.4);
+    min-height: 28px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   #root,
-  .app {
+  .app,
+  button {
     background-color: #333;
     color: #f4f4f4;
   }

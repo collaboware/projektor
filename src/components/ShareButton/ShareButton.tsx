@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { useIsMobile } from '../../hooks/useIsMobile'
+
 interface ShareButtonProps {
   title: string
   text?: string
@@ -7,13 +9,19 @@ interface ShareButtonProps {
 }
 
 const ShareButton: React.FC<ShareButtonProps> = ({ title, text, url }) => {
+  const isMobile = useIsMobile()
   return (
     <button
       onClick={() => {
-        navigator
-          .share({ title, text, url })
-          .then(() => alert('Successful share! 🎉'))
-          .catch((err) => alert(err.message))
+        if (isMobile) {
+          navigator
+            .share({ title, text, url })
+            .then(() => alert('Shared your profile.'))
+            .catch((err) => alert(err.message))
+        } else {
+          navigator.clipboard.writeText(url)
+          alert('Copied link to clipboard.')
+        }
       }}
     >
       Share

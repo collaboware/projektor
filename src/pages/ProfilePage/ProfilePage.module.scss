@@ -1,7 +1,9 @@
+@import '../../styles/constants.scss';
+
 .header {
   position: sticky;
   top: 64px;
-  background: #fff;
+  background: $white;
   margin: initial;
   padding: 16px 0;
 }
@@ -19,11 +21,14 @@
   button {
     width: 200px;
   }
+
+  .danger {
+    margin-top: 16px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   .header {
-    background-color: #333;
-    color: #f4f4f4;
+    background-color: $black;
   }
 }
