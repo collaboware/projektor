@@ -159,20 +159,7 @@ const ProfilePage: React.FC = () => {
         posts.posts.length > 0 &&
         params.webId &&
         posts.posts[0].id.includes(new URL(params.webId).host) && (
-          <PostGrid
-            posts={[
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-              ...posts.posts,
-            ]}
-          />
+          <PostGrid posts={posts.posts} />
         )}
       {!isLoading && auth.user?.id === params.webId && (
         <div className={styles.footer}>

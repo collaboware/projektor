@@ -6,7 +6,7 @@ import PostPage from './pages/PostPage/PostPage'
 import ProfilePage from './pages/ProfilePage/ProfilePage'
 import SearchPage from './pages/SearchPage/SearchPage'
 
-const RedirectBeforeAccess: React.FC = () => {
+const RedirectWithoutAccess: React.FC = () => {
   const location = useLocation()
 
   return (
@@ -21,11 +21,11 @@ const RedirectBeforeAccess: React.FC = () => {
 export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
   {
     path: '/',
-    element: isLoggedIn ? <FeedPage /> : <RedirectBeforeAccess />,
+    element: isLoggedIn ? <FeedPage /> : <RedirectWithoutAccess />,
   },
   {
     path: '/search/:term',
-    element: isLoggedIn ? <SearchPage /> : <RedirectBeforeAccess />,
+    element: isLoggedIn ? <SearchPage /> : <RedirectWithoutAccess />,
   },
   {
     path: '/login',
@@ -36,11 +36,17 @@ export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
     children: [
       {
         path: ':webId',
-        element: <ProfilePage />,
+        element:
+          isLoggingIn && !isLoggedIn ? (
+            <RedirectWithoutAccess />
+          ) : (
+            <ProfilePage />
+          ),
       },
       {
         path: ':webId/:post',
-        element: <PostPage />,
+        element:
+          isLoggingIn && !isLoggedIn ? <RedirectWithoutAccess /> : <PostPage />,
       },
     ],
   },

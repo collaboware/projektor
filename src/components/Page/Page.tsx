@@ -1,4 +1,9 @@
-import React, { PropsWithChildren, useEffect, useRef } from 'react'
+import React, {
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+} from 'react'
 import Helmet from 'react-helmet'
 import { useLocation } from 'react-router'
 
@@ -12,6 +17,12 @@ interface PageProps {
   hideSearch?: boolean
   hideHeader?: boolean
 }
+
+interface PageContext {
+  app?: React.RefObject<HTMLDivElement>
+}
+
+export const pageContext = createContext<PageContext>({})
 
 const Page: React.FC<PropsWithChildren<PageProps>> = ({
   children,
@@ -34,15 +45,17 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
   // useScrollState(location.pathname, app.current as HTMLDivElement, !loading)
 
   return (
-    <div className="app" ref={app}>
-      <Helmet>
-        <title>{title}</title>
-      </Helmet>
-      {(loading || !app.current) && loadingText && (
-        <LoadingOverlay active={loading} description={loadingText} />
-      )}
-      {!hideHeader && <Header hideSearch={hideSearch} />}
-      {children}
+    <div id="app" className="app" ref={app}>
+      <pageContext.Provider value={{ app }}>
+        <Helmet>
+          <title>{title}</title>
+        </Helmet>
+        {(loading || !app.current) && loadingText && (
+          <LoadingOverlay active={loading} description={loadingText} />
+        )}
+        {!hideHeader && <Header hideSearch={hideSearch} />}
+        {children}
+      </pageContext.Provider>
     </div>
   )
 }

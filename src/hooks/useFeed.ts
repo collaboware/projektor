@@ -77,7 +77,6 @@ export const useFeed = (currentSession: Session | null) => {
           )
         : feed
 
-      console.debug(nextFeed, lastFeed, lastUsableFeed)
       return {
         nextFeed,
         feed: lastUsableFeed?.length ? lastFeed : feed,

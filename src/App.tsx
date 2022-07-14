@@ -3,8 +3,8 @@ import {
   handleIncomingRedirect,
   Session,
 } from '@inrupt/solid-client-authn-browser'
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useRoutes } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useRoutes } from 'react-router-dom'
 import { RecoilRoot, useRecoilState } from 'recoil'
 
 import './App.scss'
@@ -14,52 +14,41 @@ import { routesConfig } from './routing'
 import { authState } from './state/auth'
 
 function App() {
-  const [isLoggingIn, setIsLoggingIn] = useState(false)
-  // const [currentSession, setCurrentSession] = useState<Session | null>(null)
-  // const [currentUser, setCurrentUser] = useState<SolidProfileShape | null>(null)
   const [auth, setAuth] = useRecoilState(authState)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   const { user, session } = auth
 
+  const location = useLocation()
   const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   if (currentSession?.info.isLoggedIn) {
-  //     const redirect = localStorage.getItem('redirect-before-access')
-  //     if (redirect) {
-  //       localStorage.removeItem('redirect-after-login')
-  //       navigate(redirect, { replace: true })
-  //     } else {
-  //       navigate('/', { replace: true })
-  //     }
-  //   }
-  // }, [currentSession?.info.isLoggedIn])
-
   useEffect(() => {
-    if (session?.info.isLoggedIn) {
+    if (session?.fetch) {
       const redirect = localStorage.getItem('redirect-before-access')
       if (redirect) {
-        localStorage.removeItem('redirect-after-login')
+        localStorage.removeItem('redirect-before-access')
         navigate(redirect, { replace: true })
       } else {
         navigate('/', { replace: true })
       }
     }
-  }, [session?.info.isLoggedIn])
+  }, [session?.fetch])
 
   useEffect(() => {
     setIsLoggingIn(true)
+    if (!location.pathname.startsWith('/login'))
+      localStorage.setItem(
+        'redirect-before-access',
+        location.pathname + location.search + location.hash
+      )
     handleIncomingRedirect({ restorePreviousSession: true })
       .then(async (sessionInfo) => {
         if (sessionInfo?.isLoggedIn) {
           const newSession = getDefaultSession()
-          setAuth({ ...auth, session: newSession })
           const newUser = await solidProfile.findOne({
             where: { id: sessionInfo.webId as string },
             doc: sessionInfo.webId as string,
           })
-          setIsLoggingIn(false)
-
           if (newUser.data) {
             setAuth({ user: newUser.data, session: newSession })
             setIsLoggingIn(false)
@@ -67,8 +56,6 @@ function App() {
             setAuth({ ...auth, session: newSession })
             setIsLoggingIn(false)
           }
-        } else if (sessionInfo) {
-          setIsLoggingIn(false)
         }
       })
       .catch(console.error)

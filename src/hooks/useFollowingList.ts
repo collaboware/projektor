@@ -41,7 +41,6 @@ export const useFollowingList = () => {
       followingIndex
         .findAll({ doc: publicTypeIndexUrl as string })
         .then((result) => {
-          console.debug(result)
           if (
             !result.data ||
             result.data.length === 0 ||
