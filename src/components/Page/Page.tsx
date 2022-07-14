@@ -7,7 +7,6 @@ import React, {
 import Helmet from 'react-helmet'
 import { useLocation } from 'react-router'
 
-import { useIsDark } from '../../hooks/useIsMobile'
 import Header from '../Header/Header'
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 
