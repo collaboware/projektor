@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 import { PostShape } from '../../generated/shex'
-import { minPostLength } from '../../pages/FeedPage/FeedPage'
+import { minPostLength, navigateToPost } from '../../pages/FeedPage/FeedPage'
 import { shortenPostId } from '../../pages/PostPage/PostPage'
 import Post from '../Post/Post'
 
@@ -16,10 +16,15 @@ interface PostGridProps {
 
 const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [hasMore, setHasMore] = useState(
     Number((feed ?? posts)?.length) > minPostLength
   )
-  const [postsToShow, setPostsToShow] = useState(minPostLength)
+  const urlParams = new URLSearchParams(location.search)
+  const initialPostsToShow = urlParams.get('posts')
+  const [postsToShow, setPostsToShow] = useState(
+    Number(initialPostsToShow ? initialPostsToShow : minPostLength)
+  )
   const postGrid = useMemo(() => {
     if (feed) {
       return feed
@@ -68,9 +73,11 @@ const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
           const remainingPosts = (feed ?? posts ?? []).length - postsToShow
           if (remainingPosts > minPostLength) {
             setPostsToShow(postsToShow + minPostLength)
+            navigateToPost(navigate, urlParams, postsToShow + minPostLength)
           } else {
             setHasMore(false)
             setPostsToShow(postsToShow + remainingPosts)
+            navigateToPost(navigate, urlParams, postsToShow + remainingPosts)
           }
         }
         setHasMore(false)

@@ -14,13 +14,15 @@ import { routesConfig } from './routing'
 import { authState } from './state/auth'
 
 function App() {
-  const [auth, setAuth] = useRecoilState(authState)
-  const [isLoggingIn, setIsLoggingIn] = useState(false)
-
-  const { user, session } = auth
-
   const location = useLocation()
   const navigate = useNavigate()
+
+  const [auth, setAuth] = useRecoilState(authState)
+  const [isLoggingIn, setIsLoggingIn] = useState(
+    Boolean(new URLSearchParams(location.search).get('code_challenge'))
+  )
+
+  const { user, session } = auth
 
   useEffect(() => {
     if (session?.fetch) {
@@ -35,12 +37,23 @@ function App() {
   }, [session?.fetch])
 
   useEffect(() => {
-    setIsLoggingIn(true)
-    if (!location.pathname.startsWith('/login'))
+    if (location.pathname === '/')
+      localStorage.setItem(
+        'last-feed-page',
+        location.pathname +
+          location.search.substring(0, location.search.indexOf('&posts'))
+      )
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/login')) {
+      const urlParams = new URLSearchParams(location.search)
+      urlParams.delete('posts')
       localStorage.setItem(
         'redirect-before-access',
-        location.pathname + location.search + location.hash
+        location.pathname + `?${urlParams.toString()}` + location.hash
       )
+    }
     handleIncomingRedirect({ restorePreviousSession: true })
       .then(async (sessionInfo) => {
         if (sessionInfo?.isLoggedIn) {

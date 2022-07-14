@@ -104,7 +104,7 @@ const PostPage: React.FC = () => {
       <div className={styles.selectedPostWrapper}>
         {!isLoading && (
           <div className={styles.buttonBar}>
-            {session?.info.webId !== params.webId && renderProfileButton()}
+            {renderProfileButton()}
             {location.state ? (
               <button
                 onClick={(e) => {

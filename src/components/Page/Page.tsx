@@ -36,11 +36,11 @@ const Page: React.FC<PropsWithChildren<PageProps>> = ({
   const location = useLocation()
 
   useEffect(() => {
-    if (location.hash) {
+    if (location.hash && !loading) {
       const element = document.querySelector(location.hash)
       if (element) element.scrollIntoView()
     }
-  }, [location.hash])
+  }, [location.hash, loading])
 
   // useScrollState(location.pathname, app.current as HTMLDivElement, !loading)
 

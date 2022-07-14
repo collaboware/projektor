@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router'
-import { useRecoilState } from 'recoil'
+import { useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { NavigateFunction, useLocation, useNavigate } from 'react-router'
+import { useRecoilState } from 'recoil'
 
 import Page from '../../components/Page/Page'
 import Post from '../../components/Post/Post'
@@ -15,6 +15,19 @@ import styles from './FeedPage.module.scss'
 
 export const minPostLength = 13
 
+export const navigateToPost = (
+  navigate: NavigateFunction,
+  urlParams: URLSearchParams,
+  postsToShow: number
+) =>
+  navigate(
+    location.pathname +
+      (!urlParams.get('feed') || urlParams.get('feed') === 'stream'
+        ? '?feed=stream'
+        : '?feed=grid') +
+      `&posts=${postsToShow}`
+  )
+
 export const FeedPage = () => {
   const [auth, _] = useRecoilState(authState)
   const { feed, nextFeed, isLoading, updateFeed } = useFeed(auth.session)
@@ -22,7 +35,10 @@ export const FeedPage = () => {
   const location = useLocation()
   const urlParams = new URLSearchParams(location.search)
   const [hasMore, setHasMore] = useState(Number(feed?.length) > minPostLength)
-  const [postsToShow, setPostsToShow] = useState(minPostLength)
+  const initialPostsToShow = urlParams.get('posts')
+  const [postsToShow, setPostsToShow] = useState(
+    Number(initialPostsToShow ? initialPostsToShow : minPostLength)
+  )
 
   return (
     <Page title="Home" loading={isLoading}>
@@ -72,9 +88,15 @@ export const FeedPage = () => {
               const remainingPosts = feed.length - postsToShow
               if (remainingPosts > minPostLength) {
                 setPostsToShow(postsToShow + minPostLength)
+                navigateToPost(navigate, urlParams, postsToShow + minPostLength)
               } else {
                 setHasMore(false)
                 setPostsToShow(postsToShow + remainingPosts)
+                navigateToPost(
+                  navigate,
+                  urlParams,
+                  postsToShow + remainingPosts
+                )
               }
             }
             setHasMore(false)

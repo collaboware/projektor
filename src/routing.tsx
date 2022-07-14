@@ -6,13 +6,18 @@ import PostPage from './pages/PostPage/PostPage'
 import ProfilePage from './pages/ProfilePage/ProfilePage'
 import SearchPage from './pages/SearchPage/SearchPage'
 
-const RedirectWithoutAccess: React.FC = () => {
+const RedirectToLogin: React.FC = () => {
   const location = useLocation()
+
+  const urlParams = new URLSearchParams(location.search)
+  urlParams.delete('posts')
 
   return (
     <Navigate
       to="/login"
-      state={{ redirectTo: location.pathname + location.search }}
+      state={{
+        redirectTo: location.pathname + `${urlParams.toString()}`,
+      }}
       replace
     />
   )
@@ -21,11 +26,11 @@ const RedirectWithoutAccess: React.FC = () => {
 export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
   {
     path: '/',
-    element: isLoggedIn ? <FeedPage /> : <RedirectWithoutAccess />,
+    element: isLoggedIn ? <FeedPage /> : <RedirectToLogin />,
   },
   {
     path: '/search/:term',
-    element: isLoggedIn ? <SearchPage /> : <RedirectWithoutAccess />,
+    element: isLoggedIn ? <SearchPage /> : <RedirectToLogin />,
   },
   {
     path: '/login',
@@ -37,16 +42,12 @@ export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
       {
         path: ':webId',
         element:
-          isLoggingIn && !isLoggedIn ? (
-            <RedirectWithoutAccess />
-          ) : (
-            <ProfilePage />
-          ),
+          isLoggingIn && !isLoggedIn ? <RedirectToLogin /> : <ProfilePage />,
       },
       {
         path: ':webId/:post',
         element:
-          isLoggingIn && !isLoggedIn ? <RedirectWithoutAccess /> : <PostPage />,
+          isLoggingIn && !isLoggedIn ? <RedirectToLogin /> : <PostPage />,
       },
     ],
   },
