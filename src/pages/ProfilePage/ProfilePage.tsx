@@ -9,6 +9,7 @@ import FollowButton from '../../components/FollowButton/FollowButton'
 import Page from '../../components/Page/Page'
 import { getPostLink } from '../../components/Post/Post'
 import PostGrid from '../../components/PostGrid/PostGrid'
+import ShareButton from '../../components/ShareButton/ShareButton'
 import UploadButton, {
   getQualityLink,
   ImageQualities,
@@ -154,7 +155,12 @@ const ProfilePage: React.FC = () => {
           <FollowButton webId={new URL(params.webId as string)} />
         </div>
       ) : null}
-      {!isLoading && <PostGrid posts={posts.posts} />}
+      {!isLoading &&
+        posts.posts.length > 0 &&
+        params.webId &&
+        posts.posts[0].id.includes(new URL(params.webId).host) && (
+          <PostGrid posts={posts.posts} />
+        )}
       {!isLoading && auth.user?.id === params.webId && (
         <div className={styles.footer}>
           <UploadButton
@@ -168,6 +174,13 @@ const ProfilePage: React.FC = () => {
               )
             }}
           />
+          {!isLoading && isMobile && profile?.name && (
+            <ShareButton
+              title={'Projektor'}
+              text={profile.name}
+              url={window.location.href}
+            />
+          )}
           <button
             className="danger"
             onClick={() => {

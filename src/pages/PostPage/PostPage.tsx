@@ -7,8 +7,10 @@ import { useRecoilState } from 'recoil'
 import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
 import { encodePostId } from '../../components/Post/Post'
+import ShareButton from '../../components/ShareButton/ShareButton'
 import { PostShape, solidProfile } from '../../generated/shex'
 import useClickOutside from '../../hooks/useClickOutside'
+import { useIsMobile } from '../../hooks/useIsMobile'
 import { authState } from '../../state/auth'
 import { postState } from '../../state/post'
 import { postsState } from '../../state/posts'
@@ -28,6 +30,7 @@ const PostPage: React.FC = () => {
   const selectedPostRef = useRef<HTMLImageElement | HTMLVideoElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const isMobile = useIsMobile()
 
   const [isLoading, setIsLoading] = useState(true)
   // const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
@@ -115,6 +118,12 @@ const PostPage: React.FC = () => {
                 Close
               </button>
             ) : null}
+            {post?.link && isMobile && (
+              <ShareButton
+                title={`Post of ${userData.profile?.name}`}
+                url={post.link}
+              />
+            )}
             {session?.info.webId === params.webId && userData.profile?.id ? (
               <button
                 className="danger"
