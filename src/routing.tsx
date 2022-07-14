@@ -36,11 +36,11 @@ export const routesConfig = (isLoggedIn: boolean, isLoggingIn: boolean) => [
     children: [
       {
         path: ':webId',
-        element: isLoggedIn ? <ProfilePage /> : <RedirectBeforeAccess />,
+        element: <ProfilePage />,
       },
       {
         path: ':webId/:post',
-        element: isLoggedIn ? <PostPage /> : <RedirectBeforeAccess />,
+        element: <PostPage />,
       },
     ],
   },

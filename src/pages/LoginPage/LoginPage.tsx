@@ -27,7 +27,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
   }, [])
 
   return (
-    <Page title="Projektor Web App">
+    <Page title="Projektor Web App" hideHeader>
       {isLoggingIn || isAuthenticating ? (
         <LoadingOverlay active={true} description="Authenticating..." />
       ) : (

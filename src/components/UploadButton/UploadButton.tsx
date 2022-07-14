@@ -6,7 +6,7 @@ import mime from 'mime'
 import { Session } from '@inrupt/solid-client-authn-browser'
 import { useLocation, useNavigate } from 'react-router'
 import classNames from 'classnames'
-import gifshot from 'gifshot'
+import gifshot from '@collaboware/gifshot'
 import {
   getSourceUrl,
   overwriteFile,
@@ -71,7 +71,7 @@ const handleMediaUpload = (
       post.fetcher._fetch = fetcher._fetch
       postIndex.fetcher._fetch = fetcher._fetch
     }
-    reader.onload = async function () {
+    reader.onloadend = async function () {
       const data = this.result
       const contentType = file?.type
       const time = new Date().getTime()
@@ -123,6 +123,7 @@ const handleMediaUpload = (
                   numFrames: 20,
                   gifWidth: 1440 / (quality as number),
                   gifHeight: 1440 / (quality as number),
+                  repeat: 3,
                 },
                 function (obj: { error: string; image: string }) {
                   if (!obj.error) {

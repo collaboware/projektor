@@ -23,43 +23,45 @@ import { userState } from '../../state/user'
 
 import styles from './ProfilePage.module.scss'
 
-export const fetchPosts = (session: Session, webId: string) => {
+export const fetchPosts = (session: Session | null, webId: string) => {
   return new Promise<PostShape[]>(async (resolve) => {
-    if (session.info.isLoggedIn) {
-      const publicTypeIndexUrl = webId?.replace(
-        'profile/card#me',
-        `settings/publicTypeIndex.ttl`
-      )
+    const publicTypeIndexUrl = webId?.replace(
+      'profile/card#me',
+      `settings/publicTypeIndex.ttl`
+    )
+    if (session?.info.isLoggedIn) {
       postIndex.fetcher._fetch = session.fetch
-      await postIndex
-        .findAll({ doc: publicTypeIndexUrl as string })
-        .then(async (posts) => {
-          const fullPosts = (
-            await Promise.all(
-              posts.data?.map(async (postIndex) => {
-                return (
-                  await post.findOne({
-                    where: { id: postIndex.link },
-                    doc: new NamedNode(postIndex.link).doc().uri,
-                  })
-                ).data
-              }) ?? []
-            )
-          ).sort((postA, postB) => {
-            const postATimeString = postA?.id.substring(
-              postA?.id.lastIndexOf('/') + 1,
-              postA?.id.lastIndexOf('-post')
-            )
-            const postBTimeString = postB?.id.substring(
-              postB?.id.lastIndexOf('/') + 1,
-              postB?.id.lastIndexOf('-post')
-            )
-            return Number(postBTimeString) - Number(postATimeString)
-          }) as PostShape[]
-          resolve(fullPosts)
-        })
     }
-    resolve([])
+    await postIndex
+      .findAll({ doc: publicTypeIndexUrl as string })
+      .then(async (posts) => {
+        const fullPosts = (
+          await Promise.all(
+            posts.data?.map(async (postIndex) => {
+              return (
+                await post.findOne({
+                  where: { id: postIndex.link },
+                  doc: new NamedNode(postIndex.link).doc().uri,
+                })
+              ).data
+            }) ?? []
+          )
+        ).sort((postA, postB) => {
+          const postATimeString = postA?.id.substring(
+            postA?.id.lastIndexOf('/') + 1,
+            postA?.id.lastIndexOf('-post')
+          )
+          const postBTimeString = postB?.id.substring(
+            postB?.id.lastIndexOf('/') + 1,
+            postB?.id.lastIndexOf('-post')
+          )
+          return Number(postBTimeString) - Number(postATimeString)
+        }) as PostShape[]
+        resolve(fullPosts)
+      })
+      .catch(() => {
+        resolve([])
+      })
   })
 }
 
@@ -121,25 +123,20 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     setIsLoading(true)
     const webId = decodeURIComponent(params.webId as string)
-    if (session?.info) {
-      fetchPosts(session, webId).then((newPosts) => {
-        if (session.info.webId !== params.webId) {
-          solidProfile.fetcher._fetch = session.fetch
-          solidProfile
-            .findOne({
-              where: { id: webId },
-              doc: webId as string,
-            })
-            .then((profile) => {
-              if (profile.data) {
-                setUserProfile({ profile: profile.data })
-              }
-            })
-        }
-        setPosts({ posts: [...newPosts] })
-        setIsLoading(false)
-      })
-    }
+    fetchPosts(session, webId).then((newPosts) => {
+      solidProfile
+        .findOne({
+          where: { id: webId },
+          doc: webId as string,
+        })
+        .then((profile) => {
+          if (profile.data) {
+            setUserProfile({ profile: profile.data })
+          }
+        })
+      setPosts({ posts: [...newPosts] })
+      setIsLoading(false)
+    })
   }, [session, params.webId])
 
   return (
@@ -152,7 +149,9 @@ const ProfilePage: React.FC = () => {
       {!isLoading && params.webId !== auth.user?.id ? (
         <div className={styles.header}>
           <h2>{profile ? profile?.name : 'Loading User...'}</h2>
-          <FollowButton webId={new URL(params.webId as string)} />
+          {auth.user && (
+            <FollowButton webId={new URL(params.webId as string)} />
+          )}
         </div>
       ) : null}
       {!isLoading &&

@@ -20,10 +20,7 @@ interface PostProps {
 
 export const encodePostId = (postId: string) => {
   const b64PostId = btoa(postId)
-  return b64PostId.substring(
-    0,
-    ((b64PostId.length - (b64PostId.length % 3)) / 3) * 3
-  )
+  return b64PostId.replaceAll('=', '')
 }
 
 const isDefinitelyRawUpload = (post: string) => {
@@ -46,9 +43,12 @@ export const getPostLink = (link: string, quality: number) => {
 
 const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
   const [loadRaw, setLoadRaw] = useState(isDefinitelyRawUpload(post.id))
+  const isVideo = mime.lookup(post.link).startsWith('video')
   const imageComponent = (
     <img
-      onError={() => setLoadRaw(true)}
+      onError={() => {
+        if (!isVideo) setLoadRaw(true)
+      }}
       key={post.id}
       title={post.link}
       onClick={() => {
@@ -76,7 +76,6 @@ const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
       {!loadRaw && (
         <picture>
           <source
-            onError={console.error}
             srcSet={
               grid ? getPostLink(post.link, 8) : getQualityLink(post.link, 8)
             }
