@@ -37,3 +37,16 @@ button.danger {
     transform: scale(1.4);
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  #root,
+  .app {
+    background-color: #333;
+    color: #f4f4f4;
+  }
+
+  a:link,
+  a:visited {
+    color: #6666ff;
+  }
+}

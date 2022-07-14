@@ -35,7 +35,11 @@ const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
         <Post
           grid
           post={post}
-          onSelect={() => navigate(shortenPostId(post.id))}
+          onSelect={() =>
+            navigate(shortenPostId(post.id), {
+              state: location.pathname + location.search,
+            })
+          }
           key={post.id}
         />
       ))

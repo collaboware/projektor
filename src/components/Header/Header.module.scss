@@ -43,3 +43,14 @@
     transform: initial;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .header {
+    background-color: #333;
+
+    .brand,
+    .user {
+      color: #f4f4f4;
+    }
+  }
+}

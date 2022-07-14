@@ -40,3 +40,9 @@
     gap: 36px;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .selectedPostWrapper {
+    background-color: #333;
+  }
+}
