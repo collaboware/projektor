@@ -3,19 +3,17 @@ import React from 'react'
 import { useIsMobile } from '../../hooks/useIsMobile'
 
 interface ShareButtonProps {
-  title: string
-  text?: string
   url: string
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ title, text, url }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ url }) => {
   const isMobile = useIsMobile()
   return (
     <button
       onClick={() => {
         if (isMobile) {
           navigator
-            .share({ title, text, url })
+            .share({ url })
             .then(() => alert('Shared your profile.'))
             .catch((err) => alert(err.message))
         } else {

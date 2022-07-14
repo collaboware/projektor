@@ -105,23 +105,6 @@ const PostPage: React.FC = () => {
         {!isLoading && (
           <div className={styles.buttonBar}>
             {session?.info.webId !== params.webId && renderProfileButton()}
-            {location.state ? (
-              <button
-                onClick={(e) => {
-                  analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
-                  e.preventDefault()
-                  onClose()
-                }}
-              >
-                Close
-              </button>
-            ) : null}
-            {post?.link && (
-              <ShareButton
-                title={`Post of ${userData.profile?.name}`}
-                url={post.link}
-              />
-            )}
             {session?.info.webId === params.webId && userData.profile?.id ? (
               <button
                 className="danger"
@@ -149,6 +132,18 @@ const PostPage: React.FC = () => {
                 }}
               >
                 Delete
+              </button>
+            ) : null}
+            {post?.link && <ShareButton url={post.link} />}
+            {location.state ? (
+              <button
+                onClick={(e) => {
+                  analyticsWindow.fathom?.trackGoal('PTSICNRA', 0)
+                  e.preventDefault()
+                  onClose()
+                }}
+              >
+                Close
               </button>
             ) : null}
           </div>

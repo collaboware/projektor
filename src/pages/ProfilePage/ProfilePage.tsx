@@ -175,11 +175,7 @@ const ProfilePage: React.FC = () => {
             }}
           />
           {!isLoading && profile?.name && (
-            <ShareButton
-              title={'Projektor'}
-              text={profile.name}
-              url={window.location.href}
-            />
+            <ShareButton url={window.location.href} />
           )}
           <button
             className={classNames('danger', styles.danger)}
