@@ -37,15 +37,6 @@ function App() {
   }, [session?.fetch])
 
   useEffect(() => {
-    if (location.pathname === '/')
-      localStorage.setItem(
-        'last-feed-page',
-        location.pathname +
-          location.search.substring(0, location.search.indexOf('&posts'))
-      )
-  }, [location.pathname])
-
-  useEffect(() => {
     if (!location.pathname.startsWith('/login')) {
       const urlParams = new URLSearchParams(location.search)
       urlParams.delete('posts')
@@ -73,7 +64,10 @@ function App() {
           setIsLoggingIn(false)
         }
       })
-      .catch(console.error)
+      .catch((e) => {
+        console.error(e)
+        setIsLoggingIn(false)
+      })
   }, [])
 
   const routing = useRoutes(

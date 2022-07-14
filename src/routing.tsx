@@ -16,7 +16,7 @@ const RedirectToLogin: React.FC = () => {
     <Navigate
       to="/login"
       state={{
-        redirectTo: location.pathname + `${urlParams.toString()}`,
+        redirectTo: location.pathname + `?${urlParams.toString()}`,
       }}
       replace
     />
