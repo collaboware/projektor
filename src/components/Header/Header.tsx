@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
   return (
     <>
       <div className={styles.header}>
-        <Link to={localStorage.getItem('last-feed-page') ?? '/'}>
+        <Link to={'/'}>
           <h2 className={styles.brand}>Projektor</h2>
         </Link>
         {!isMobile && input}
