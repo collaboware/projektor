@@ -27,12 +27,14 @@
   }
 }
 
+@media (max-width: $screen-l) {
+  .footer {
+    gap: 16px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .header {
     background-color: $black;
-  }
-
-  .footer {
-    gap: 16px;
   }
 }
