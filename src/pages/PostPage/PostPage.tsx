@@ -33,7 +33,7 @@ const fetchRawPost = async (
   const handleEvent = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
     switch (e.type) {
       case 'progress':
-        console.debug(`Fetched ${e.loaded} bytes, with total: ${e.total}`)
+        console.debug(`Fetched ${e.loaded} bytes`)
         progressCallback(e)
         break
       default:
@@ -118,7 +118,7 @@ const PostPage: React.FC = () => {
       fetchPostMetadata(params.post, session as Session).then(({ data }) => {
         if (data?.link) {
           fetchRawPost(data?.link, (e) => {
-            setProgress(`Fetched ${e.loaded} bytes, from a total of ${e.total}`)
+            setProgress(`Fetched ${e.loaded} bytes`)
           }).then((raw) => {
             setPost({ post: data, raw })
             setIsLoading(false)
