@@ -3,8 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import { useLocation, useNavigate } from 'react-router'
 
 import { PostShape } from '../../generated/shex'
-import { minPostLength, navigateToPost } from '../../pages/FeedPage/FeedPage'
-import { shortenPostId } from '../../pages/PostPage/PostPage'
+import { minPostLength, fetchMorePosts } from '../../pages/FeedPage/FeedPage'
 import Post from '../Post/Post'
 
 import styles from './PostGrid.module.scss'
@@ -35,7 +34,9 @@ const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
             post={post}
             onSelect={() =>
               navigate(
-                `/user/${encodeURIComponent(user)}/${shortenPostId(post.id)}`,
+                `/user/${encodeURIComponent(user)}/${encodeURIComponent(
+                  post.id
+                )}`,
                 { state: location.pathname + location.search }
               )
             }
@@ -51,7 +52,7 @@ const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
             grid
             post={post}
             onSelect={() =>
-              navigate(shortenPostId(post.id), {
+              navigate(encodeURIComponent(post.id), {
                 state: location.pathname + location.search,
               })
             }
@@ -73,11 +74,11 @@ const PostGrid: React.FC<PostGridProps> = ({ posts, feed }) => {
           const remainingPosts = (feed ?? posts ?? []).length - postsToShow
           if (remainingPosts > minPostLength) {
             setPostsToShow(postsToShow + minPostLength)
-            navigateToPost(navigate, urlParams, postsToShow + minPostLength)
+            fetchMorePosts(navigate, urlParams, postsToShow + minPostLength)
           } else {
             setHasMore(false)
             setPostsToShow(postsToShow + remainingPosts)
-            navigateToPost(navigate, urlParams, postsToShow + remainingPosts)
+            fetchMorePosts(navigate, urlParams, postsToShow + remainingPosts)
           }
         }
         setHasMore(false)

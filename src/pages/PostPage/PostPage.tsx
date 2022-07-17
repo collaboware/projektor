@@ -8,18 +8,61 @@ import { analyticsWindow } from '../../AnalyticsWindow'
 import Page from '../../components/Page/Page'
 import { encodePostId } from '../../components/Post/Post'
 import ShareButton from '../../components/ShareButton/ShareButton'
-import { PostShape, solidProfile } from '../../generated/shex'
+import { post, PostShape, solidProfile } from '../../generated/shex'
 import useClickOutside from '../../hooks/useClickOutside'
 import { authState } from '../../state/auth'
 import { postState } from '../../state/post'
 import { postsState } from '../../state/posts'
 import { userState } from '../../state/user'
-import { deletePost, fetchPosts } from '../ProfilePage/ProfilePage'
+import { deletePost } from '../ProfilePage/ProfilePage'
 
 import styles from './PostPage.module.scss'
 
-export const shortenPostId = (post: string) => {
-  return post.substring(post.lastIndexOf('/') + 1, post.lastIndexOf('-post'))
+const fetchPostMetadata = async (session: Session, postURL: string) => {
+  post.fetcher._fetch = session.fetch
+  return await post.findOne({
+    where: { id: postURL },
+    doc: postURL,
+  })
+}
+
+const fetchRawPost = async (
+  session: Session,
+  postLink: string,
+  progressCallback: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void
+) => {
+  const handleEvent = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
+    switch (e.type) {
+      case 'progress':
+        console.debug(`Fetched ${e.loaded} bytes, with total: ${e.total}`)
+        progressCallback(e)
+        break
+      default:
+        console.debug(`${e.type} event in request`)
+    }
+  }
+  return new Promise<string>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.withCredentials = true
+    xhr.responseType = 'blob'
+    xhr.onreadystatechange = async function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status >= 400) {
+          reject()
+        } else {
+          resolve(URL.createObjectURL(xhr.response))
+        }
+      }
+    }
+    xhr.addEventListener('loadstart', handleEvent)
+    xhr.addEventListener('loadend', handleEvent)
+    xhr.addEventListener('progress', handleEvent)
+    xhr.addEventListener('error', handleEvent)
+    xhr.addEventListener('abort', handleEvent)
+    xhr.addEventListener('load', handleEvent)
+    xhr.open('GET', postLink)
+    xhr.send()
+  })
 }
 
 const PostPage: React.FC = () => {
@@ -31,11 +74,12 @@ const PostPage: React.FC = () => {
   const location = useLocation()
 
   const [isLoading, setIsLoading] = useState(true)
+  const [progress, setProgress] = useState<string>()
   // const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
   // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
 
   const [userData, setUserData] = useRecoilState(userState)
-  const [{ post }, setPost] = useRecoilState(postState)
+  const [{ post, raw }, setPost] = useRecoilState(postState)
   const [_posts, setPosts] = useRecoilState(postsState)
   const { session } = auth
 
@@ -56,27 +100,45 @@ const PostPage: React.FC = () => {
     if (session?.info) {
       solidProfile.fetcher._fetch = session.fetch
     }
-    solidProfile
-      .findOne({
-        where: { id: params.webId },
-        doc: params.webId as string,
-      })
-      .then((profile) => {
-        if (profile.data) {
-          setUserData({ ...userData, profile: profile.data })
+    if (
+      session &&
+      session.info &&
+      params.webId &&
+      (!userData.profile || userData.profile.id !== params.webId)
+    ) {
+      solidProfile
+        .findOne({
+          where: { id: params.webId },
+          doc: params.webId as string,
+        })
+        .then((profile) => {
+          if (profile.data) {
+            setUserData({ ...userData, profile: profile.data })
+          }
+        })
+    }
+    if (
+      session &&
+      session.info &&
+      params.webId &&
+      params.post &&
+      (!post || post.id !== params.post)
+    ) {
+      fetchPostMetadata(session, params.post).then(({ data }) => {
+        if (data?.link) {
+          fetchRawPost(session, data?.link, (e) => {
+            setProgress(`Fetched ${e.loaded} bytes, from a total of ${e.total}`)
+          }).then((raw) => {
+            setPost({ post: data, raw })
+            setIsLoading(false)
+          })
         }
       })
-    fetchPosts(session, params.webId as string)
-      .then((posts) => {
-        const selected = posts.find(
-          (post) => shortenPostId(post.id) === params.post
-        )
-        if (selected) {
-          setPost({ ...post, post: selected })
-          setIsLoading(false)
-        }
-      })
-      .catch(() => setIsLoading(false))
+    }
+    if (params.post && post && post.id === params.post) {
+      setPost({ post, raw })
+      setIsLoading(false)
+    }
   }, [])
 
   const renderProfileButton = () => {
@@ -99,7 +161,7 @@ const PostPage: React.FC = () => {
     <Page
       title={userData ? `Post by ${userData.profile?.name}` : 'Post'}
       loading={isLoading}
-      loadingText="Loading..."
+      loadingText={progress ? progress : 'Loading...'}
     >
       <div className={styles.selectedPostWrapper}>
         {!isLoading && (
@@ -152,10 +214,9 @@ const PostPage: React.FC = () => {
         {!isLoading && post && mime.lookup(post.link).startsWith('image') && (
           <img
             title={post.link}
-            loading={'lazy'}
             ref={selectedPostRef as RefObject<HTMLImageElement>}
             className={styles.selectedPost}
-            src={post.link}
+            src={raw}
           />
         )}
         {!isLoading && post && mime.lookup(post.link).startsWith('video') && (
@@ -167,7 +228,7 @@ const PostPage: React.FC = () => {
             ref={selectedPostRef as RefObject<HTMLVideoElement>}
             className={styles.selectedPost}
           >
-            <source src={post.link} type="video/quicktime" />
+            <source src={raw} type={mime.lookup(post.link)} />
             Sorry, your browser doesn't support embedded videos. Here's a link
             to the video instead: {post.link}
           </video>

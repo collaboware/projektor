@@ -9,13 +9,12 @@ import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton from '../../components/UploadButton/UploadButton'
 import { useFeed } from '../../hooks/useFeed'
 import { authState } from '../../state/auth'
-import { shortenPostId } from '../PostPage/PostPage'
 
 import styles from './FeedPage.module.scss'
 
 export const minPostLength = 13
 
-export const navigateToPost = (
+export const fetchMorePosts = (
   navigate: NavigateFunction,
   urlParams: URLSearchParams,
   postsToShow: number
@@ -88,11 +87,11 @@ export const FeedPage = () => {
               const remainingPosts = feed.length - postsToShow
               if (remainingPosts > minPostLength) {
                 setPostsToShow(postsToShow + minPostLength)
-                navigateToPost(navigate, urlParams, postsToShow + minPostLength)
+                fetchMorePosts(navigate, urlParams, postsToShow + minPostLength)
               } else {
                 setHasMore(false)
                 setPostsToShow(postsToShow + remainingPosts)
-                navigateToPost(
+                fetchMorePosts(
                   navigate,
                   urlParams,
                   postsToShow + remainingPosts
@@ -113,7 +112,7 @@ export const FeedPage = () => {
                     fullSize={true}
                     onSelect={() => {
                       navigate(
-                        `/user/${encodeURIComponent(user)}/${shortenPostId(
+                        `/user/${encodeURIComponent(user)}/${encodeURIComponent(
                           post.id
                         )}`,
                         { state: location.pathname + location.search }

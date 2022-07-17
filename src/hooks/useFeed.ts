@@ -3,11 +3,14 @@ import { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { FollowingShape, PostShape } from '../generated/shex'
-import { shortenPostId } from '../pages/PostPage/PostPage'
 import { fetchPosts } from '../pages/ProfilePage/ProfilePage'
 import { feedState } from '../state/feed'
 
 import { useFollowingList } from './useFollowingList'
+
+export const shortenPostId = (post: string) => {
+  return post.substring(post.lastIndexOf('/') + 1, post.lastIndexOf('-post'))
+}
 
 const loadFeed = (followingList: FollowingShape, session: Session) => {
   const following =
