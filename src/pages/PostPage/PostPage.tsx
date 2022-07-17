@@ -18,8 +18,8 @@ import { deletePost } from '../ProfilePage/ProfilePage'
 
 import styles from './PostPage.module.scss'
 
-const fetchPostMetadata = async (session: Session, postURL: string) => {
-  post.fetcher._fetch = session.fetch
+const fetchPostMetadata = async (postURL: string, session?: Session) => {
+  if (session) post.fetcher._fetch = session.fetch
   return await post.findOne({
     where: { id: postURL },
     doc: postURL,
@@ -27,7 +27,6 @@ const fetchPostMetadata = async (session: Session, postURL: string) => {
 }
 
 const fetchRawPost = async (
-  session: Session,
   postLink: string,
   progressCallback: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void
 ) => {
@@ -101,8 +100,6 @@ const PostPage: React.FC = () => {
       solidProfile.fetcher._fetch = session.fetch
     }
     if (
-      session &&
-      session.info &&
       params.webId &&
       (!userData.profile || userData.profile.id !== params.webId)
     ) {
@@ -117,16 +114,10 @@ const PostPage: React.FC = () => {
           }
         })
     }
-    if (
-      session &&
-      session.info &&
-      params.webId &&
-      params.post &&
-      (!post || post.id !== params.post)
-    ) {
-      fetchPostMetadata(session, params.post).then(({ data }) => {
+    if (params.webId && params.post && (!post || post.id !== params.post)) {
+      fetchPostMetadata(params.post, session as Session).then(({ data }) => {
         if (data?.link) {
-          fetchRawPost(session, data?.link, (e) => {
+          fetchRawPost(data?.link, (e) => {
             setProgress(`Fetched ${e.loaded} bytes, from a total of ${e.total}`)
           }).then((raw) => {
             setPost({ post: data, raw })
