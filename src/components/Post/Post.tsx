@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import mime from 'mime'
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 
 import screenSizes from '../../constants.scss'
 import { PostShape } from '../../generated/shex'
@@ -41,7 +41,7 @@ export const getPostLink = (link: string, quality: number) => {
   }
 }
 
-const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
+const Post: React.FC<PostProps> = memo(({ post, fullSize, grid, onSelect }) => {
   const [loadRaw, setLoadRaw] = useState(isDefinitelyRawUpload(post.id))
   const isVideo = mime.lookup(post.link).startsWith('video')
   const imageComponent = (
@@ -98,6 +98,6 @@ const Post: React.FC<PostProps> = ({ post, fullSize, grid, onSelect }) => {
       )}
     </div>
   )
-}
+})
 
 export default Post

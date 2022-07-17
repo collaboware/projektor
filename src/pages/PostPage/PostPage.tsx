@@ -151,7 +151,7 @@ const PostPage: React.FC = () => {
               navigate(`/user/${encodeURIComponent(userData.profile.id)}`)
           }}
         >
-          View {userData.profile?.name}'s profile
+          {userData.profile?.name}
         </button>
       )
     }
@@ -196,7 +196,7 @@ const PostPage: React.FC = () => {
                 Delete
               </button>
             ) : null}
-            {post?.link && <ShareButton url={post.link} />}
+            {post?.link && <ShareButton url={window.location.href} post />}
             {location.state ? (
               <button
                 onClick={(e) => {

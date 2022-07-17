@@ -40,7 +40,7 @@ export const FeedPage = () => {
   )
 
   return (
-    <Page title="Home" loading={isLoading}>
+    <Page title="Home" loading={isLoading && !feed}>
       <div className={styles.feedSettings}>
         <label>
           <input

@@ -225,7 +225,6 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
                 type="file"
                 id="picture-upload"
                 accept="image/*"
-                capture="environment"
                 style={{ display: 'none' }}
                 onChange={(e) => {
                   setIsUploading(true)

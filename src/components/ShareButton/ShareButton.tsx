@@ -4,9 +4,10 @@ import { useIsMobile } from '../../hooks/useIsMobile'
 
 interface ShareButtonProps {
   url: string
+  post?: boolean
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ url }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ url, post }) => {
   const isMobile = useIsMobile()
   return (
     <button
@@ -14,7 +15,13 @@ const ShareButton: React.FC<ShareButtonProps> = ({ url }) => {
         if (isMobile) {
           navigator
             .share({ url })
-            .then(() => alert('Shared your profile.'))
+            .then(() => {
+              if (post) {
+                alert('Copied a link to your post.')
+              } else {
+                alert('Copied a link to your profile.')
+              }
+            })
             .catch((err) => alert(err.message))
         } else {
           navigator.clipboard.writeText(url)
