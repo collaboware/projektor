@@ -1,6 +1,49 @@
 import { NamedNode, Literal } from 'rdflib'
 import { Shape } from 'shex-methods'
 
+export type InruptProfileShape = {
+  id: string // the url of a node of this shape
+  storage: string | string[] // The location of a Solid storage server related to this WebId
+  isPrimaryTopicOf: string | string[] // The location of a Solid profile related to this WebId
+}
+
+export type InruptProfileShapeCreateArgs = {
+  id?: string | NamedNode // the url to match or create the node with e.g. 'https://example.com#this', 'https://example.com/profile/card#me'
+  storage: URL | NamedNode | (URL | NamedNode)[] // The location of a Solid storage server related to this WebId
+  isPrimaryTopicOf: URL | NamedNode | (URL | NamedNode)[] // The location of a Solid profile related to this WebId
+}
+
+export type InruptProfileShapeUpdateArgs = Partial<InruptProfileShapeCreateArgs>
+
+export enum InruptProfileShapeContext {
+  storage = 'sp:storage',
+  isPrimaryTopicOf = 'foaf:isPrimaryTopicOf',
+}
+
+export const inruptProfileShex = `
+PREFIX prk: <https://dips.projektor.technology/projektor/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX sp: <http://www.w3.org/ns/pim/space#>
+
+prk:InruptProfileShape EXTRA a {
+  sp:storage IRI +
+    // rdfs:comment  "The location of a Solid storage server related to this WebId" ;
+  foaf:isPrimaryTopicOf IRI +
+    // rdfs:comment  "The location of a Solid profile related to this WebId" ;
+}
+`
+
+export const inruptProfile = new Shape<
+  InruptProfileShape,
+  InruptProfileShapeCreateArgs
+>({
+  id: 'https://dips.projektor.technology/projektor/InruptProfileShape',
+  shape: inruptProfileShex,
+  context: InruptProfileShapeContext,
+})
+
 export type FollowingShape = {
   id: string // the url of a node of this shape
   following?: string | string[] // The webId of somebody that is followed
@@ -111,14 +154,14 @@ export type PostShapeIndex = {
   id: string // the url of a node of this shape
   link: string // The link to a post
 } & {
-  type: PostShapeIndexType.Post // Defines the node as a Post (from projektor)
+  type: (PostShapeIndexType.PostIndex | PostShapeIndexType.Post)[] // Defines the node as a PostIndex (from projektor)
 }
 
 export type PostShapeIndexCreateArgs = {
   id?: string | NamedNode // the url to match or create the node with e.g. 'https://example.com#this', 'https://example.com/profile/card#me'
   link: URL | NamedNode // The link to a post
 } & {
-  type: PostShapeIndexType.Post // Defines the node as a Post (from projektor)
+  type: (PostShapeIndexType.PostIndex | PostShapeIndexType.Post)[] // Defines the node as a PostIndex (from projektor)
 }
 
 export type PostShapeIndexUpdateArgs = Partial<PostShapeIndexCreateArgs>
@@ -128,6 +171,7 @@ export enum PostShapeType {
 }
 
 export enum PostShapeIndexType {
+  PostIndex = 'https://dips.projektor.technology/projektor/PostIndex',
   Post = 'https://dips.projektor.technology/projektor/Post',
 }
 
@@ -157,8 +201,8 @@ prk:PostShape EXTRA a {
 }
 
 prk:PostShapeIndex EXTRA a {
-  a [ prk:Post ]
-    // rdfs:comment  "Defines the node as a Post (from projektor)" ;
+  a [ prk:PostIndex prk:Post ] 
+    // rdfs:comment  "Defines the node as a PostIndex (from projektor)" ;
   prk:link IRI
     // rdfs:comment  "The link to a post" ;
 }
@@ -184,7 +228,7 @@ export type SolidProfileShape = {
   name?: string // An alternate way to define a person's name.
   hasPhoto?: string // A link to the person's photo
   img?: string // Photo link but in string form
-  inbox: string // The user's LDP inbox to which apps can post notifications
+  inbox?: string // The user's LDP inbox to which apps can post notifications
   storage?: string | string[] // The location of a Solid storage server related to this WebId
   account?: string // The user's account
   privateTypeIndex?: string | string[] // A registry of all types used on the user's Pod (for private access only)
@@ -200,7 +244,7 @@ export type SolidProfileShapeCreateArgs = {
   name?: string | Literal // An alternate way to define a person's name.
   hasPhoto?: URL | NamedNode // A link to the person's photo
   img?: string | Literal // Photo link but in string form
-  inbox: URL | NamedNode // The user's LDP inbox to which apps can post notifications
+  inbox?: URL | NamedNode // The user's LDP inbox to which apps can post notifications
   storage?: URL | NamedNode | (URL | NamedNode)[] // The location of a Solid storage server related to this WebId
   account?: URL | NamedNode // The user's account
   privateTypeIndex?: URL | NamedNode | (URL | NamedNode)[] // A registry of all types used on the user's Pod (for private access only)
@@ -257,7 +301,7 @@ srs:SolidProfileShape EXTRA a {
     // rdfs:comment  "A link to the person's photo" ;
   foaf:img xsd:string ?
     // rdfs:comment  "Photo link but in string form" ;
-  ldp:inbox IRI
+  ldp:inbox IRI ?
     // rdfs:comment  "The user's LDP inbox to which apps can post notifications" ;
   sp:storage IRI *
     // rdfs:comment  "The location of a Solid storage server related to this WebId" ;

@@ -23,7 +23,7 @@ srs:SolidProfileShape EXTRA a {
     // rdfs:comment  "A link to the person's photo" ;
   foaf:img xsd:string ?
     // rdfs:comment  "Photo link but in string form" ;
-  ldp:inbox IRI
+  ldp:inbox IRI ?
     // rdfs:comment  "The user's LDP inbox to which apps can post notifications" ;
   sp:storage IRI *
     // rdfs:comment  "The location of a Solid storage server related to this WebId" ;

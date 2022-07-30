@@ -1,14 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { NavigateFunction, useLocation, useNavigate } from 'react-router'
-import { useRecoilState } from 'recoil'
 
 import Page from '../../components/Page/Page'
 import Post from '../../components/Post/Post'
 import PostGrid from '../../components/PostGrid/PostGrid'
 import UploadButton from '../../components/UploadButton/UploadButton'
 import { useFeed } from '../../hooks/useFeed'
-import { authState } from '../../state/auth'
 
 import styles from './FeedPage.module.scss'
 
@@ -28,8 +26,7 @@ export const fetchMorePosts = (
   )
 
 export const FeedPage = () => {
-  const [auth, _] = useRecoilState(authState)
-  const { feed, nextFeed, isLoading, updateFeed } = useFeed(auth.session)
+  const { feed, nextFeed, isLoading, updateFeed } = useFeed()
   const navigate = useNavigate()
   const location = useLocation()
   const urlParams = new URLSearchParams(location.search)
@@ -38,6 +35,66 @@ export const FeedPage = () => {
   const [postsToShow, setPostsToShow] = useState(
     Number(initialPostsToShow ? initialPostsToShow : minPostLength)
   )
+
+  console.debug(feed)
+
+  const feedStream = useMemo(() => {
+    return (
+      feed && (
+        <InfiniteScroll
+          scrollableTarget="app"
+          loader={<h2>...</h2>}
+          hasMore={hasMore}
+          dataLength={Number(feed?.length)}
+          className={styles.feed}
+          next={() => {
+            if (postsToShow < feed.length) {
+              setHasMore(true)
+              const remainingPosts = feed.length - postsToShow
+              if (remainingPosts > minPostLength) {
+                setPostsToShow(postsToShow + minPostLength)
+                fetchMorePosts(navigate, urlParams, postsToShow + minPostLength)
+              } else {
+                setHasMore(false)
+                setPostsToShow(postsToShow + remainingPosts)
+                fetchMorePosts(
+                  navigate,
+                  urlParams,
+                  postsToShow + remainingPosts
+                )
+              }
+            }
+            setHasMore(false)
+          }}
+        >
+          {!urlParams.get('feed') || urlParams.get('feed') === 'stream' ? (
+            feed
+              .slice(0, feed.length > minPostLength ? postsToShow : feed.length)
+              .map(({ post, user }) => {
+                console.debug(post, user)
+                return (
+                  <Post
+                    key={post.id}
+                    post={post}
+                    fullSize={true}
+                    onSelect={() => {
+                      navigate(
+                        `/user/${encodeURIComponent(user)}/${encodeURIComponent(
+                          post.id
+                        )}`,
+                        { state: location.pathname + location.search }
+                      )
+                    }}
+                  />
+                )
+              })
+          ) : (
+            <PostGrid feed={feed} />
+          )}
+        </InfiniteScroll>
+      )
+    )
+  }, [feed, postsToShow])
 
   return (
     <Page title="Home" loading={isLoading && !feed}>
@@ -74,58 +131,7 @@ export const FeedPage = () => {
         </div>
       ) : null}
       {isLoading && <h2>Loading...</h2>}
-      {feed && (
-        <InfiniteScroll
-          scrollableTarget="app"
-          loader={<h2>...</h2>}
-          hasMore={hasMore}
-          dataLength={Number(feed?.length)}
-          className={styles.feed}
-          next={() => {
-            if (postsToShow < feed.length) {
-              setHasMore(true)
-              const remainingPosts = feed.length - postsToShow
-              if (remainingPosts > minPostLength) {
-                setPostsToShow(postsToShow + minPostLength)
-                fetchMorePosts(navigate, urlParams, postsToShow + minPostLength)
-              } else {
-                setHasMore(false)
-                setPostsToShow(postsToShow + remainingPosts)
-                fetchMorePosts(
-                  navigate,
-                  urlParams,
-                  postsToShow + remainingPosts
-                )
-              }
-            }
-            setHasMore(false)
-          }}
-        >
-          {!urlParams.get('feed') || urlParams.get('feed') === 'stream' ? (
-            feed
-              .slice(0, feed.length > minPostLength ? postsToShow : feed.length)
-              .map(({ post, user }) => {
-                return (
-                  <Post
-                    key={post.id}
-                    post={post}
-                    fullSize={true}
-                    onSelect={() => {
-                      navigate(
-                        `/user/${encodeURIComponent(user)}/${encodeURIComponent(
-                          post.id
-                        )}`,
-                        { state: location.pathname + location.search }
-                      )
-                    }}
-                  />
-                )
-              })
-          ) : (
-            <PostGrid feed={feed} />
-          )}
-        </InfiniteScroll>
-      )}
+      {feedStream}
       <div className="footer">
         <UploadButton />
       </div>

@@ -1,5 +1,5 @@
 export enum IdentityProviderUrls {
-  Inrupt = 'pod.inrupt.com',
+  Inrupt = 'id.inrupt.com',
 }
 
 export enum IdentityProviderUrlsWithSubdomainScheme {

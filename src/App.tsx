@@ -1,8 +1,10 @@
+import { getProfileAll, universalAccess } from '@inrupt/solid-client'
 import {
   getDefaultSession,
   handleIncomingRedirect,
   Session,
 } from '@inrupt/solid-client-authn-browser'
+import { Namespace } from 'rdflib'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useRoutes } from 'react-router-dom'
 import { RecoilRoot, useRecoilState } from 'recoil'
@@ -12,6 +14,21 @@ import { CurrentUserAuthContext } from './context/CurrentUserAuthContext'
 import { solidProfile, SolidProfileShape } from './generated/shex'
 import { routesConfig } from './routing'
 import { authState } from './state/auth'
+
+export const PIM = Namespace('http://www.w3.org/ns/pim/space#')
+export const RDFS = Namespace('http://www.w3.org/2000/01/rdf-schema#')
+
+export const getProfileAndStorageUrl = async (webId: string) => {
+  const profiles = await getProfileAll(webId as string)
+  const webIdSubject = profiles.webIdProfile.graphs.default[webId as string]
+  const extendedProfile =
+    webIdSubject.predicates[RDFS('seeAlso').value]?.namedNodes
+  const storageUrl = webIdSubject.predicates[PIM('storage').value]?.namedNodes
+  return [
+    (extendedProfile && extendedProfile[0]) || webId,
+    storageUrl ? storageUrl[0] : null,
+  ]
+}
 
 function App() {
   const location = useLocation()
@@ -45,30 +62,73 @@ function App() {
         location.pathname + `?${urlParams.toString()}` + location.hash
       )
     }
-    handleIncomingRedirect({ restorePreviousSession: true })
-      .then(async (sessionInfo) => {
-        if (sessionInfo?.isLoggedIn) {
-          const newSession = getDefaultSession()
-          const newUser = await solidProfile.findOne({
-            where: { id: sessionInfo.webId as string },
-            doc: sessionInfo.webId as string,
-          })
-          if (newUser.data) {
-            setAuth({ user: newUser.data, session: newSession })
-            setIsLoggingIn(false)
+    const newSession = getDefaultSession()
+    if (newSession.eventNames().includes('sessionExpired')) {
+      handleIncomingRedirect({ restorePreviousSession: true })
+        .then(async (sessionInfo) => {
+          if (
+            sessionInfo?.isLoggedIn &&
+            sessionInfo.webId &&
+            newSession.fetch
+          ) {
+            const [extendedProfile, storageUrl] = await getProfileAndStorageUrl(
+              sessionInfo.webId
+            )
+            solidProfile.fetcher._fetch = newSession.fetch
+            const { data } = await solidProfile.findOne({
+              where: { id: sessionInfo.webId as string },
+              doc: extendedProfile || (sessionInfo.webId as string),
+            })
+            if (data) {
+              setAuth({
+                user: data,
+                session: newSession,
+                storage: storageUrl ?? (data.storage as string),
+              })
+              setIsLoggingIn(false)
+            } else {
+              setAuth({ ...auth, session: newSession })
+              setIsLoggingIn(false)
+            }
           } else {
-            setAuth({ ...auth, session: newSession })
             setIsLoggingIn(false)
           }
-        } else {
+        })
+        .catch((e) => {
+          console.error(e)
           setIsLoggingIn(false)
-        }
-      })
-      .catch((e) => {
-        console.error(e)
-        setIsLoggingIn(false)
-      })
+        })
+    }
   }, [])
+
+  // Fixing public folder for ESS 2.2
+  useEffect(() => {
+    if (auth.storage && auth.session) {
+      universalAccess
+        .getPublicAccess(auth.storage + 'public', {
+          fetch: auth.session.fetch as (
+            input: RequestInfo | URL,
+            init?: RequestInit | undefined
+          ) => Promise<Response>,
+        })
+        .then((access) => {
+          if (!access?.read) {
+            universalAccess.setPublicAccess(
+              auth.storage + 'public',
+              {
+                read: true,
+              },
+              {
+                fetch: auth.session?.fetch as (
+                  input: RequestInfo | URL,
+                  init?: RequestInit | undefined
+                ) => Promise<Response>,
+              }
+            )
+          }
+        })
+    }
+  }, [auth.storage])
 
   const routing = useRoutes(
     routesConfig(!!session?.info.isLoggedIn, isLoggingIn)

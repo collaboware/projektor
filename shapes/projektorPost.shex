@@ -12,8 +12,8 @@ prk:PostShape EXTRA a {
 }
 
 prk:PostShapeIndex EXTRA a {
-  a [ prk:Post ]
-    // rdfs:comment  "Defines the node as a Post (from projektor)" ;
+  a [ prk:PostIndex prk:Post ] 
+    // rdfs:comment  "Defines the node as a PostIndex (from projektor)" ;
   prk:link IRI
     // rdfs:comment  "The link to a post" ;
 }

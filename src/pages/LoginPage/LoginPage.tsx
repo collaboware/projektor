@@ -48,7 +48,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ isAuthenticating }) => {
                   analyticsWindow.fathom?.trackGoal('GYLKIUUP', 0)
                   localStorage.clear()
                   login({
-                    oidcIssuer: 'https://broker.pod.inrupt.com',
+                    oidcIssuer: 'https://login.inrupt.com',
                     clientName: 'Projektor Web App',
                     clientId:
                       process.env.NODE_ENV === 'development'

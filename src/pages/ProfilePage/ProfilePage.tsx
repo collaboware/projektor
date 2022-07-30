@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useRecoilState } from 'recoil'
 
+import { getProfileAndStorageUrl } from '../../App'
 import FollowButton from '../../components/FollowButton/FollowButton'
 import Page from '../../components/Page/Page'
 import { getPostLink } from '../../components/Post/Post'
@@ -24,13 +25,11 @@ import { userState } from '../../state/user'
 
 import styles from './ProfilePage.module.scss'
 
-export const fetchPosts = (session: Session | null, webId: string) => {
+export const fetchPosts = (session: Session | null, storageUrl: string) => {
   return new Promise<PostShape[]>(async (resolve) => {
-    const publicTypeIndexUrl = webId?.replace(
-      'profile/card#me',
-      `settings/publicTypeIndex.ttl`
-    )
+    const publicTypeIndexUrl = storageUrl + 'settings/publicTypeIndex.ttl'
     if (session?.info.isLoggedIn) {
+      post.fetcher._fetch = session.fetch
       postIndex.fetcher._fetch = session.fetch
     }
     await postIndex
@@ -124,20 +123,27 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     setIsLoading(true)
     const webId = decodeURIComponent(params.webId as string)
-    fetchPosts(session, webId).then((newPosts) => {
-      solidProfile
-        .findOne({
+    getProfileAndStorageUrl(webId).then(
+      async ([extendedProfile, storageUrl]) => {
+        if (session) {
+          solidProfile.fetcher._fetch = session.fetch
+        }
+        const { data, errors } = await solidProfile.findOne({
           where: { id: webId },
-          doc: webId as string,
+          doc: extendedProfile as string,
         })
-        .then((profile) => {
-          if (profile.data) {
-            setUserProfile({ profile: profile.data })
+        console.debug(errors, webId)
+        if (data) {
+          setUserProfile({ profile: data })
+        }
+        fetchPosts(session, storageUrl ?? (data?.storage as string)).then(
+          (newPosts) => {
+            setPosts({ posts: [...newPosts] })
+            setIsLoading(false)
           }
-        })
-      setPosts({ posts: [...newPosts] })
-      setIsLoading(false)
-    })
+        )
+      }
+    )
   }, [session, params.webId])
 
   return (
@@ -155,12 +161,7 @@ const ProfilePage: React.FC = () => {
           )}
         </div>
       ) : null}
-      {!isLoading &&
-        posts.posts.length > 0 &&
-        params.webId &&
-        posts.posts[0].id.includes(new URL(params.webId).host) && (
-          <PostGrid posts={posts.posts} />
-        )}
+      {!isLoading && posts.posts.length > 0 && <PostGrid posts={posts.posts} />}
       {!isLoading && auth.user?.id === params.webId && (
         <div className={styles.footer}>
           <UploadButton
@@ -182,7 +183,7 @@ const ProfilePage: React.FC = () => {
             onClick={() => {
               const currentSession = getDefaultSession()
               currentSession.logout().then(() => {
-                setAuthState({ session: null, user: null })
+                setAuthState({ session: null, user: null, storage: null })
                 navigate('/login')
               })
             }}

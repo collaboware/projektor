@@ -1,7 +1,6 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { CurrentUserAuthContext } from '../context/CurrentUserAuthContext'
 import {
   following,
   followingIndex,
@@ -9,28 +8,21 @@ import {
   FollowingShapeIndexType,
   FollowingShapeType,
 } from '../generated/shex'
+import { authState } from '../state/auth'
 import { followingState } from '../state/following'
 
 export const useFollowingList = () => {
-  const { session: currentSession } = useContext(CurrentUserAuthContext)
+  const [{ session: currentSession, storage }] = useRecoilState(authState)
   const [isLoading, setIsLoading] = useState(false)
   const [followingList, setFollowingList] = useRecoilState(followingState)
   const [createNewIndex, setCreateNewIndex] = useState(false)
   const publicTypeIndexUrl = useMemo(
-    () =>
-      currentSession?.info.webId?.replace(
-        'profile/card#me',
-        `settings/publicTypeIndex.ttl`
-      ),
-    [currentSession]
+    () => storage + `settings/publicTypeIndex.ttl`,
+    [storage]
   )
   const followingUrl = useMemo(
-    () =>
-      currentSession?.info.webId?.replace(
-        'profile/card#me',
-        `profile/following#me`
-      ),
-    [currentSession]
+    () => storage + `profile/following#me`,
+    [storage]
   )
 
   useEffect(() => {
@@ -63,6 +55,63 @@ export const useFollowingList = () => {
         })
     }
   }, [currentSession])
+
+  // migrate following list to ess 2.2
+  useEffect(() => {
+    if (currentSession && followingList?.following) {
+      following.fetcher._fetch = currentSession?.fetch
+      let needsUpdate = false
+      if (Array.isArray(followingList.following)) {
+        if (
+          followingList.following.find((following) =>
+            following.includes('pod.inrupt.com')
+          )
+        ) {
+          needsUpdate = true
+        }
+      } else if (followingList.following?.includes('pod.inrupt.com')) {
+        needsUpdate = true
+      }
+
+      if (needsUpdate) {
+        const newFollowing = Array.isArray(followingList.following)
+          ? followingList.following.map((following) => {
+              if (following.includes('pod.inrupt.com')) {
+                return new URL(
+                  following
+                    .replace('pod.inrupt.com', 'id.inrupt.com')
+                    .replace('/profile/card#me', '')
+                )
+              }
+              return new URL(following)
+            })
+          : [
+              followingList.following.includes('pod.inrupt.com')
+                ? new URL(
+                    followingList.following
+                      .replace('pod.inrupt.com', 'id.inrupt.com')
+                      .replace('/profile/card#me', '')
+                  )
+                : new URL(followingList.following),
+            ]
+        following
+          .update({
+            data: {
+              id: followingList.id,
+              type: followingList.type,
+              following: newFollowing,
+            },
+            doc: followingUrl,
+          })
+          .then((res) => {
+            console.debug(res, 'lala')
+          })
+          .catch((e) => {
+            console.debug(e)
+          })
+      }
+    }
+  }, [followingList])
 
   const isFollowing = useCallback(
     (webId: URL) =>

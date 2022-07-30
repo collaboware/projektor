@@ -4,6 +4,7 @@ import { useRecoilState } from 'recoil'
 
 import { FollowingShape, PostShape } from '../generated/shex'
 import { fetchPosts } from '../pages/ProfilePage/ProfilePage'
+import { authState } from '../state/auth'
 import { feedState } from '../state/feed'
 
 import { useFollowingList } from './useFollowingList'
@@ -12,17 +13,23 @@ export const shortenPostId = (post: string) => {
   return post.substring(post.lastIndexOf('/') + 1, post.lastIndexOf('-post'))
 }
 
-const loadFeed = (followingList: FollowingShape, session: Session) => {
+const loadFeed = (
+  followingList: FollowingShape,
+  session: Session,
+  storageUrl: string
+) => {
   const following =
     typeof followingList.following === 'string'
       ? [followingList.following]
       : followingList.following
   return Promise.all(
-    [...(following ?? []), session.info.webId as string].map((following) => {
-      return fetchPosts(session, following).then((posts) =>
-        posts.map((post) => ({ post, user: following }))
-      )
-    })
+    [...(following ?? []), session.info.webId as string].map(
+      async (following) => {
+        return fetchPosts(session, storageUrl).then((posts) =>
+          posts.map((post) => ({ post, user: following }))
+        )
+      }
+    )
   ).then((individualPostsLists) =>
     individualPostsLists
       .reduce((allPosts, postList) => {
@@ -42,9 +49,10 @@ const loadFeed = (followingList: FollowingShape, session: Session) => {
   )
 }
 
-export const useFeed = (currentSession: Session | null) => {
+export const useFeed = () => {
   const { followingList } = useFollowingList()
   const [isLoading, setIsLoading] = useState(true)
+  const [{ session: currentSession, storage }] = useRecoilState(authState)
   const [{ feed, nextFeed }, setFeedState] = useRecoilState(feedState)
 
   const setNextFeed = (feed: { post: PostShape; user: string }[]) => {
@@ -89,8 +97,8 @@ export const useFeed = (currentSession: Session | null) => {
 
   const refetchFeed = async () => {
     setIsLoading(true)
-    if (followingList && currentSession) {
-      await loadFeed(followingList, currentSession).then((feed) => {
+    if (followingList && currentSession && storage) {
+      await loadFeed(followingList, currentSession, storage).then((feed) => {
         setFeedState({ feed, nextFeed: [] })
         setIsLoading(false)
       })
@@ -102,9 +110,9 @@ export const useFeed = (currentSession: Session | null) => {
   }
 
   useEffect(() => {
-    if (currentSession && followingList) {
+    if (currentSession && followingList && storage) {
       setIsLoading(true)
-      loadFeed(followingList, currentSession).then((feed) => {
+      loadFeed(followingList, currentSession, storage).then((feed) => {
         setNextFeed(feed)
         setIsLoading(false)
       })

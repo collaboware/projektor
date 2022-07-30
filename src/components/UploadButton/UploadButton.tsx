@@ -1,29 +1,29 @@
-import React, { useState } from 'react'
-import { Fetcher, Store } from 'rdflib'
-import { useRecoilState } from 'recoil'
-import imageCompression from 'browser-image-compression'
-import mime from 'mime'
-import { Session } from '@inrupt/solid-client-authn-browser'
-import { useLocation, useNavigate } from 'react-router'
-import classNames from 'classnames'
 import gifshot from '@collaboware/gifshot'
 import {
   getSourceUrl,
   overwriteFile,
   WithResourceInfo,
 } from '@inrupt/solid-client'
+import { Session } from '@inrupt/solid-client-authn-browser'
+import imageCompression from 'browser-image-compression'
+import classNames from 'classnames'
+import mime from 'mime'
+import { Fetcher, Store } from 'rdflib'
+import React, { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router'
+import { useRecoilState } from 'recoil'
 
+import { analyticsWindow } from '../../AnalyticsWindow'
 import {
   post,
   postIndex,
   PostShapeIndexType,
   PostShapeType,
 } from '../../generated/shex'
-import { analyticsWindow } from '../../AnalyticsWindow'
-import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
-import { authState } from '../../state/auth'
-import { useFeed } from '../../hooks/useFeed'
 import { dataURItoBlob } from '../../gifHelper'
+import { useFeed } from '../../hooks/useFeed'
+import { authState } from '../../state/auth'
+import LoadingOverlay from '../LoadingOverlay/LoadingOverlay'
 
 import styles from './UploadButton.module.scss'
 
@@ -35,6 +35,10 @@ export function getQualityLink(link: string, quality: number) {
 
 export function getVideoThumbnailLink(link: string, quality: number) {
   return `${link}-${quality}.gif`
+}
+
+export function migrateStorageFromEssWebId(webId: string) {
+  return webId.replace('pod.inrupt.com', 'storage.inrupt.com')
 }
 
 interface UploadButtonProps {
@@ -75,18 +79,23 @@ const handleMediaUpload = (
       const data = this.result
       const contentType = file?.type
       const time = new Date().getTime()
-      const mediaUrl = session?.info.webId?.replace(
-        'profile/card#me',
-
-        `public/${time}-${file?.name.replaceAll(' ', '-') as string}`
+      const mediaUrl = migrateStorageFromEssWebId(
+        session?.info.webId?.replace(
+          'profile/card#me',
+          `public/${time}-${file?.name.replaceAll(' ', '-') as string}`
+        ) as string
       )
-      const postUrl = session?.info.webId?.replace(
-        'profile/card#me',
-        `public/${time}-post`
+      const postUrl = migrateStorageFromEssWebId(
+        session?.info.webId?.replace(
+          'profile/card#me',
+          `public/${time}-post`
+        ) as string
       )
-      const publicTypeIndexUrl = session?.info.webId?.replace(
-        'profile/card#me',
-        `settings/publicTypeIndex.ttl`
+      const publicTypeIndexUrl = migrateStorageFromEssWebId(
+        session?.info.webId?.replace(
+          'profile/card#me',
+          `settings/publicTypeIndex.ttl`
+        ) as string
       )
       const uploads = ImageQualities.map(async (quality) => {
         if (quality === 'raw') {
@@ -178,7 +187,7 @@ const handleMediaUpload = (
               doc: publicTypeIndexUrl as string,
               data: {
                 id: data.id,
-                type: PostShapeIndexType.Post,
+                type: [PostShapeIndexType.PostIndex],
                 link: new URL(data.id),
               },
             })
@@ -193,7 +202,7 @@ const handleMediaUpload = (
 
 const UploadButton: React.FC<UploadButtonProps> = ({ onUpload }) => {
   const [auth, _] = useRecoilState(authState)
-  const { refetchFeed } = useFeed(auth.session)
+  const { refetchFeed } = useFeed()
   const location = useLocation()
   const navigate = useNavigate()
   const currentSession = auth.session

@@ -6,6 +6,7 @@ import { SolidProfileShape } from '../generated/shex'
 export interface AuthState {
   session: Session | null
   user: SolidProfileShape | null
+  storage: string | null
 }
 
 export const authState = atom<AuthState>({
@@ -14,5 +15,6 @@ export const authState = atom<AuthState>({
   default: {
     user: null,
     session: null,
+    storage: null,
   },
 })

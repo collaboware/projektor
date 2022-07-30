@@ -1,0 +1,12 @@
+PREFIX prk: <https://dips.projektor.technology/projektor/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX sp: <http://www.w3.org/ns/pim/space#>
+
+prk:InruptProfileShape EXTRA a {
+  sp:storage IRI +
+    // rdfs:comment  "The location of a Solid storage server related to this WebId" ;
+  foaf:isPrimaryTopicOf IRI +
+    // rdfs:comment  "The location of a Solid profile related to this WebId" ;
+}

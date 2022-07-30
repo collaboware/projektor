@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 
+import { getProfileAndStorageUrl } from '../../App'
 import Page from '../../components/Page/Page'
 import { CurrentUserAuthContext } from '../../context/CurrentUserAuthContext'
-import { solidProfile, SolidProfileShape } from '../../generated/shex'
 
 import {
   IdentityProviderUrls,
@@ -18,7 +18,8 @@ const SearchPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [foundMatches, setFoundMatches] = useState<
     | {
-        user: SolidProfileShape
+        webId: string
+        user: string
         provider: string
       }[]
     | string
@@ -27,41 +28,42 @@ const SearchPage: React.FC = () => {
     typeof setTimeout
   > | null>(null)
 
+  console.debug(foundMatches)
+
   useEffect(() => {
     setIsLoading(true)
-    const newMatches: { user: SolidProfileShape; provider: string }[] = []
+    const newMatches: { user: string; webId: string; provider: string }[] = []
     let possibleUserWebId: string
+
+    if (currentSearch) {
+      clearTimeout(currentSearch)
+    }
+
     if (term?.startsWith('https://')) {
       setCurrentSearch(
-        setTimeout(() => {
-          solidProfile
-            .findOne({
-              where: { id: possibleUserWebId },
-              doc: possibleUserWebId,
-            })
-            .then((profile) => {
-              if (profile.data) {
-                setFoundMatches([
-                  {
-                    user: profile.data,
-                    provider: new URL(possibleUserWebId).host,
-                  },
-                ])
-              }
-            })
+        setTimeout(async () => {
+          const [extendedProfile] = await getProfileAndStorageUrl(
+            possibleUserWebId
+          )
+          if (extendedProfile) {
+            setFoundMatches([
+              {
+                user: term,
+                webId: extendedProfile,
+                provider: new URL(possibleUserWebId).host,
+              },
+            ])
+          }
         }, 1000)
       )
     }
+
     if (currentSession) {
-      solidProfile.fetcher._fetch = currentSession?.fetch
-      if (currentSearch) {
-        clearTimeout(currentSearch)
-      }
       setCurrentSearch(
         setTimeout(() => {
           const possibleUserWebIds = [
             ...Object.values(IdentityProviderUrls).map((idp) => {
-              return `https://${idp}/${term}/profile/card#me`
+              return `https://${idp}/${term}`
             }),
             ...Object.values(IdentityProviderUrlsWithSubdomainScheme).map(
               (idp) => {
@@ -70,22 +72,19 @@ const SearchPage: React.FC = () => {
             ),
           ]
           Promise.all(
-            possibleUserWebIds.map((possibleUserWebId) => {
-              return solidProfile
-                .findOne({
-                  where: { id: possibleUserWebId },
-                  doc: possibleUserWebId,
+            possibleUserWebIds.map(async (possibleUserWebId) => {
+              const [extendedProfile] = await getProfileAndStorageUrl(
+                possibleUserWebId
+              ).catch(() => {
+                return []
+              })
+              if (extendedProfile) {
+                newMatches.push({
+                  user: term as string,
+                  webId: extendedProfile,
+                  provider: new URL(possibleUserWebId).host,
                 })
-                .then((profile) => {
-                  console.debug(profile)
-                  if (profile.data) {
-                    newMatches.push({
-                      user: profile.data,
-                      provider: new URL(possibleUserWebId).host,
-                    })
-                  }
-                })
-                .catch(console.warn)
+              }
             })
           ).then(() => {
             if (newMatches.length) {
@@ -95,7 +94,7 @@ const SearchPage: React.FC = () => {
             }
             setIsLoading(false)
           })
-        }, 1000)
+        }, 2000)
       )
     }
   }, [term])
@@ -109,9 +108,9 @@ const SearchPage: React.FC = () => {
       {typeof foundMatches !== 'string' &&
         foundMatches.map((match) => {
           return (
-            <div className={styles.results} key={match.user.id}>
-              <Link to={`/user/${encodeURIComponent(match.user.id)}`}>
-                <h1>{match.user.name}</h1>
+            <div className={styles.results} key={match.webId}>
+              <Link to={`/user/${encodeURIComponent(match.webId)}`}>
+                <h1>{match.user}</h1>
               </Link>
               <h2 className={styles.provider}>@{match.provider}</h2>
             </div>
