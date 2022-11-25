@@ -124,31 +124,30 @@ const ProfilePage: React.FC = () => {
     setIsLoading(true)
     const webId = decodeURIComponent(params.webId as string)
     getProfileAndStorageUrl(webId).then(
-      async ([extendedProfile, storageUrl]) => {
-        if (session) {
-          solidProfile.fetcher._fetch = session.fetch
-        }
-        const { data, errors } = await solidProfile.findOne({
-          where: { id: webId },
-          doc: extendedProfile as string,
-        })
-        console.debug(errors, webId)
-        if (data) {
-          setUserProfile({ profile: data })
-        }
-        fetchPosts(session, storageUrl ?? (data?.storage as string)).then(
-          (newPosts) => {
-            setPosts({ posts: [...newPosts] })
-            setIsLoading(false)
+      async ([webId, extendedProfile, storageUrl]) => {
+        try {
+          const { data, errors } = await solidProfile.findOne({
+            where: { id: webId as string },
+            doc: extendedProfile as string,
+          })
+          console.debug(errors, webId)
+          if (data) {
+            setUserProfile({ profile: data })
           }
-        )
+        } catch {
+          console.error('Error fetching profile')
+        }
+        fetchPosts(session, storageUrl).then((newPosts) => {
+          setPosts({ posts: [...newPosts] })
+          setIsLoading(false)
+        })
       }
     )
   }, [session, params.webId])
 
   return (
     <Page
-      title={profile ? (profile?.name as string) : 'Profile'}
+      title={!isLoading && profile ? (profile?.name as string) : ''}
       loading={isLoading || isLoadingFollowingList}
       loadingText="Loading Posts..."
       hideSearch={isMobile}

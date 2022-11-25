@@ -63,8 +63,8 @@ const Header: React.FC<HeaderProps> = ({ hideSearch }) => {
   return (
     <>
       <div className={styles.header}>
-        <Link to={'/'}>
-          <h2 className={styles.brand}>Projektor</h2>
+        <Link to={'/'} className={styles.logo}>
+          <img src="/Logo.png" />
         </Link>
         {!isMobile && input}
         {user && (

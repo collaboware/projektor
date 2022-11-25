@@ -73,16 +73,16 @@ const SearchPage: React.FC = () => {
           ]
           Promise.all(
             possibleUserWebIds.map(async (possibleUserWebId) => {
-              const [extendedProfile] = await getProfileAndStorageUrl(
+              const [webId] = await getProfileAndStorageUrl(
                 possibleUserWebId
               ).catch(() => {
                 return []
               })
-              if (extendedProfile) {
+              if (webId) {
                 newMatches.push({
                   user: term as string,
-                  webId: extendedProfile,
-                  provider: new URL(possibleUserWebId).host,
+                  webId: webId,
+                  provider: new URL(webId).host,
                 })
               }
             })

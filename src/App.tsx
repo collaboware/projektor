@@ -25,8 +25,9 @@ export const getProfileAndStorageUrl = async (webId: string) => {
     webIdSubject.predicates[RDFS('seeAlso').value]?.namedNodes
   const storageUrl = webIdSubject.predicates[PIM('storage').value]?.namedNodes
   return [
-    (extendedProfile && extendedProfile[0]) || webId,
-    storageUrl ? storageUrl[0] : null,
+    webIdSubject.url,
+    (extendedProfile && extendedProfile[0]) || webIdSubject.url,
+    storageUrl ? storageUrl[0] : `https://${new URL(webId).host}/`,
   ]
 }
 
@@ -71,9 +72,8 @@ function App() {
             sessionInfo.webId &&
             newSession.fetch
           ) {
-            const [extendedProfile, storageUrl] = await getProfileAndStorageUrl(
-              sessionInfo.webId
-            )
+            const [_webId, extendedProfile, storageUrl] =
+              await getProfileAndStorageUrl(sessionInfo.webId)
             solidProfile.fetcher._fetch = newSession.fetch
             const { data } = await solidProfile.findOne({
               where: { id: sessionInfo.webId as string },

@@ -26,44 +26,6 @@ const fetchPostMetadata = async (postURL: string, session?: Session) => {
   })
 }
 
-const fetchRawPost = async (
-  postLink: string,
-  progressCallback: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void
-) => {
-  const handleEvent = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
-    switch (e.type) {
-      case 'progress':
-        console.debug(`Fetched ${e.loaded} bytes`)
-        progressCallback(e)
-        break
-      default:
-        console.debug(`${e.type} event in request`)
-    }
-  }
-  return new Promise<string>((resolve, reject) => {
-    const xhr = new XMLHttpRequest()
-    xhr.withCredentials = true
-    xhr.responseType = 'blob'
-    xhr.onreadystatechange = async function () {
-      if (xhr.readyState === 4) {
-        if (xhr.status >= 400) {
-          reject()
-        } else {
-          resolve(URL.createObjectURL(xhr.response))
-        }
-      }
-    }
-    xhr.addEventListener('loadstart', handleEvent)
-    xhr.addEventListener('loadend', handleEvent)
-    xhr.addEventListener('progress', handleEvent)
-    xhr.addEventListener('error', handleEvent)
-    xhr.addEventListener('abort', handleEvent)
-    xhr.addEventListener('load', handleEvent)
-    xhr.open('GET', postLink)
-    xhr.send()
-  })
-}
-
 const PostPage: React.FC = () => {
   const [auth, _] = useRecoilState(authState)
   // const { session: currentSession } = useContext(CurrentUserAuthContext)
@@ -73,7 +35,6 @@ const PostPage: React.FC = () => {
   const location = useLocation()
 
   const [isLoading, setIsLoading] = useState(true)
-  const [progress, setProgress] = useState<string>()
   // const [selectedPost, setSelectedPost] = useState<PostShape | null>(null)
   // const [userProfile, setUserProfile] = useState<SolidProfileShape | null>(null)
 
@@ -117,10 +78,12 @@ const PostPage: React.FC = () => {
     if (params.webId && params.post && (!post || post.id !== params.post)) {
       fetchPostMetadata(params.post, session as Session).then(({ data }) => {
         if (data?.link) {
-          fetchRawPost(data?.link, (e) => {
-            setProgress(`Fetched ${e.loaded} bytes`)
-          }).then((raw) => {
-            setPost({ post: data, raw })
+          // fetch raw post
+          session?.fetch(data?.link).then(async (raw) => {
+            setPost({
+              post: data,
+              raw: URL.createObjectURL(await raw.blob()),
+            })
             setIsLoading(false)
           })
         }
@@ -152,7 +115,7 @@ const PostPage: React.FC = () => {
     <Page
       title={userData ? `Post by ${userData.profile?.name}` : 'Post'}
       loading={isLoading}
-      loadingText={progress ? progress : 'Loading...'}
+      loadingText={'Loading...'}
     >
       <div className={styles.selectedPostWrapper}>
         {!isLoading && (

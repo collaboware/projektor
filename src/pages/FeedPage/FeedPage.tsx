@@ -36,8 +36,6 @@ export const FeedPage = () => {
     Number(initialPostsToShow ? initialPostsToShow : minPostLength)
   )
 
-  console.debug(feed)
-
   const feedStream = useMemo(() => {
     return (
       feed && (
@@ -94,7 +92,7 @@ export const FeedPage = () => {
         </InfiniteScroll>
       )
     )
-  }, [feed, postsToShow])
+  }, [feed, postsToShow, urlParams])
 
   return (
     <Page title="Home" loading={isLoading && !feed}>

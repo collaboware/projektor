@@ -17,11 +17,17 @@
   margin-right: 4px;
 }
 
-.brand {
-  text-align: left;
+.logo {
   margin: initial;
   width: 200px;
-  color: #000;
+  display: flex;
+
+  img {
+    height: 32px;
+  }
+
+  bottom: -4px;
+  position: relative;
 }
 
 .user {
